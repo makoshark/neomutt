@@ -3913,7 +3913,7 @@ struct Option MuttVars[] = {
   */
 #endif /* defined HAVE_SSL_PARTIAL_CHAIN */
 #endif /* defined USE_SSL_OPENSSL */
-  { "ssl_ciphers", DT_STRING, R_NONE, UL &SslCiphers, UL 0 },
+  { "ssl_ciphers", DT_STRING, R_NONE, UL &SslCiphers, UL "@SYSTEM" },
   /*
   ** .pp
   ** Contains a colon-separated list of ciphers to use when using SSL.
