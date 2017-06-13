@@ -247,6 +247,7 @@ WHERE short NntpContext;
 #endif
 
 WHERE short DebugLevel;
+WHERE char *DebugDir;
 WHERE char *DebugFile;
 
 WHERE short History;
