@@ -40,9 +40,11 @@
 #include "rfc1524.h"
 #include "body.h"
 #include "globals.h"
+#include "mime.h"
 #include "options.h"
 #include "parameter.h"
 #include "protos.h"
+#include "mime.h"
 
 /**
  * rfc1524_expand_command - Expand expandos in a command
@@ -314,7 +316,7 @@ static int rfc1524_mailcap_parse(struct Body *a, char *filename, char *type,
 
       if (opt == MUTT_AUTOVIEW)
       {
-        if (!copiousoutput)
+        if (a->type != TYPETEXT || a->disposition != DISPINLINE)
           found = false;
       }
       else if (opt == MUTT_COMPOSE)
