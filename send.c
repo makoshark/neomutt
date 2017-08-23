@@ -2026,7 +2026,7 @@ int ci_send_message(int flags, struct Header *msg, char *tempfile,
     struct Body *save_sig = NULL;
     struct Body *save_parts = NULL;
 
-    if (WithCrypto && (msg->security & (ENCRYPT | SIGN)) && FccClear)
+    if (WithCrypto && (msg->security & ENCRYPT) && FccClear)
       msg->content = clear_content;
 
     /* check to see if the user wants copies of all attachments */
