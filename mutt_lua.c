@@ -30,12 +30,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "mutt/mutt.h"
+#include "config/mbtable.h"
 #include "mutt.h"
 #include "mutt_lua.h"
 #include "address.h"
 #include "globals.h"
 #include "mailbox.h"
-#include "mbtable.h"
 #include "mutt_commands.h"
 #include "mutt_options.h"
 #include "options.h"

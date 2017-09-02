@@ -37,6 +37,7 @@
 #include <unistd.h>
 #include <wchar.h>
 #include "mutt/mutt.h"
+#include "config/mbtable.h"
 #include "mutt.h"
 #include "init.h"
 #include "address.h"
@@ -50,7 +51,6 @@
 #include "history.h"
 #include "keymap.h"
 #include "mailbox.h"
-#include "mbtable.h"
 #include "mbyte.h"
 #include "mutt_curses.h"
 #include "mutt_menu.h"

@@ -31,6 +31,7 @@
 #include <string.h>
 #include <time.h>
 #include "mutt/mutt.h"
+#include "config/mbtable.h"
 #include "mutt.h"
 #include "address.h"
 #include "body.h"
@@ -39,7 +40,6 @@
 #include "format_flags.h"
 #include "globals.h"
 #include "header.h"
-#include "mbtable.h"
 #include "mutt_curses.h"
 #include "ncrypt/ncrypt.h"
 #include "options.h"
