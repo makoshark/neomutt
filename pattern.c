@@ -36,9 +36,8 @@
 #include <wchar.h>
 #include <wctype.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "mutt.h"
-#include "pattern.h"
-#include "address.h"
 #include "body.h"
 #include "context.h"
 #include "copy.h"
@@ -53,6 +52,7 @@
 #include "ncrypt/ncrypt.h"
 #include "opcodes.h"
 #include "options.h"
+#include "pattern.h"
 #include "protos.h"
 #include "state.h"
 #include "tags.h"

@@ -26,6 +26,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "mutt.h"
 #include "copy.h"
 #include "address.h"

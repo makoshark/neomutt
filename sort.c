@@ -24,10 +24,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "config/sort.h"
 #include "mutt.h"
-#include "sort.h"
 #include "address.h"
+#include "sort.h"
 #include "body.h"
 #include "context.h"
 #include "envelope.h"

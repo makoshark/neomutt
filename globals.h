@@ -26,6 +26,7 @@
 #include <signal.h>
 #include "mutt/mutt.h"
 #include "where.h"
+#include "config/address.h"
 
 #ifdef MAIN_C
 /* so that global vars get included */

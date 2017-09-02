@@ -33,9 +33,9 @@
 #include <unistd.h>
 #include <utime.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "mutt.h"
 #include "mx.h"
-#include "address.h"
 #include "body.h"
 #include "buffy.h"
 #include "context.h"

@@ -29,8 +29,8 @@
 #include <string.h>
 #include <unistd.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "mutt.h"
-#include "address.h"
 #include "context.h"
 #include "envelope.h"
 #include "globals.h"

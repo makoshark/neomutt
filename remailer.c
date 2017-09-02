@@ -31,6 +31,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "mutt.h"
 #include "remailer.h"
 #include "address.h"

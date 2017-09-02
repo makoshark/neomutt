@@ -27,19 +27,6 @@
 #include <stddef.h>
 
 /**
- * struct Address - An email address
- */
-struct Address
-{
-  char *personal; /**< real name of address */
-  char *mailbox;  /**< mailbox and host address */
-  int group;      /**< group mailbox? */
-  struct Address *next;
-  bool is_intl : 1;
-  bool intl_checked : 1;
-};
-
-/**
  * enum AddressError - possible values for AddressError
  */
 enum AddressError

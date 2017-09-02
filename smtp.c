@@ -32,9 +32,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "conn/conn.h"
 #include "mutt.h"
-#include "address.h"
 #include "globals.h"
 #include "mutt_account.h"
 #include "mutt_curses.h"

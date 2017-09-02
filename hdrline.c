@@ -31,6 +31,7 @@
 #include <string.h>
 #include <time.h>
 #include "mutt/mutt.h"
+#include "config/address.h"
 #include "config/mbtable.h"
 #include "config/sort.h"
 #include "mutt.h"
