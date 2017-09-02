@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mutt/mutt.h"
-#include "config/address.h"
+#include "config/lib.h"
 #include "config/sort.h"
 #include "mutt.h"
 #include "address.h"

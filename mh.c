@@ -44,7 +44,7 @@
 #include <unistd.h>
 #include <utime.h>
 #include "mutt/mutt.h"
-#include "config/sort.h"
+#include "config/lib.h"
 #include "mutt.h"
 #include "body.h"
 #include "buffy.h"

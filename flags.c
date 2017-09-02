@@ -24,7 +24,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "mutt/mutt.h"
-#include "config/sort.h"
+#include "config/lib.h"
 #include "mutt.h"
 #include "context.h"
 #include "globals.h"

@@ -47,6 +47,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "mutt/mutt.h"
+#include "config/lib.h"
 #include "mutt.h"
 #include "mutt_notmuch.h"
 #include "body.h"

@@ -49,6 +49,7 @@
 #include "mutt/message.h"
 #include "mutt/regex3.h"
 #include "mutt/string2.h"
+#include "config/lib.h"
 #include "mutt.h"
 #include "account.h"
 #include "conn_globals.h"

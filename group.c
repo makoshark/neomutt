@@ -24,7 +24,7 @@
 #include "config.h"
 #include <stdlib.h>
 #include "mutt/mutt.h"
-#include "config/address.h"
+#include "config/lib.h"
 #include "mutt.h"
 #include "group.h"
 #include "address.h"

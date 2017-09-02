@@ -217,18 +217,6 @@ enum MuttMisc
   MUTT_SAVE_OVERWRITE
 };
 
-/**
- * enum QuadOptionResponse - Possible values of a QuadOption
- */
-enum QuadOptionResponse
-{
-  MUTT_ABORT = -1,
-  MUTT_NO,
-  MUTT_YES,
-  MUTT_ASKNO,
-  MUTT_ASKYES
-};
-
 /* flags to ci_send_message() */
 #define SENDREPLY        (1 << 0)
 #define SENDGROUPREPLY   (1 << 1)

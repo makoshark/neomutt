@@ -31,7 +31,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "mutt/mutt.h"
-#include "config/address.h"
+#include "config/lib.h"
 #include "address.h"
 #include "filter.h"
 #include "format_flags.h"

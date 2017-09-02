@@ -39,6 +39,7 @@
 #include <unistd.h>
 #include <wchar.h>
 #include "mutt/mutt.h"
+#include "config/lib.h"
 #include "mutt.h"
 #include "context.h"
 #include "enter_state.h"
@@ -51,9 +52,7 @@
 #include "options.h"
 #include "pager.h"
 #include "protos.h"
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#endif
+#include "sidebar.h"
 #ifdef HAVE_ISWBLANK
 #include <wctype.h>
 #endif

@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <utime.h>
 #include "mutt/mutt.h"
+#include "config/lib.h"
 #include "mutt.h"
 #include "buffy.h"
 #include "context.h"

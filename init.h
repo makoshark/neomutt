@@ -42,6 +42,7 @@
 #include "mx.h"
 #include "options.h"
 #include "protos.h"
+#include "sidebar.h"
 #include "sort.h"
 #ifdef USE_LUA
 #include "mutt_lua.h"
@@ -56,22 +57,8 @@ struct Buffer;
 #define MUTT_SET_UNSET (1 << 1) /**< default is to unset all vars */
 #define MUTT_SET_RESET (1 << 2) /**< default is to reset all vars to default */
 
-/* forced redraw/resort types + other flags */
-#define R_NONE        0
-#define R_INDEX       (1 << 0) /**< redraw the index menu (MENU_MAIN) */
-#define R_PAGER       (1 << 1) /**< redraw the pager menu */
-#define R_PAGER_FLOW  (1 << 2) /**< reflow line_info and redraw the pager menu */
-#define R_RESORT      (1 << 3) /**< resort the mailbox */
-#define R_RESORT_SUB  (1 << 4) /**< resort subthreads */
-#define R_RESORT_INIT (1 << 5) /**< resort from scratch */
-#define R_TREE        (1 << 6) /**< redraw the thread tree */
-#define R_REFLOW      (1 << 7) /**< reflow window layout and full redraw */
-#define R_SIDEBAR     (1 << 8) /**< redraw the sidebar */
-#define R_MENU        (1 << 9) /**< redraw all menus */
-#define R_BOTH        (R_INDEX | R_PAGER)
-#define R_RESORT_BOTH (R_RESORT | R_RESORT_SUB)
-
 #define UL (unsigned long)
+#define IP (intptr_t)
 #endif /* _MAKEDOC */
 
 #ifndef ISPELL
@@ -4400,82 +4387,6 @@ struct ConfigDef MuttVars[] = {
   { "xterm_title",            DT_SYNONYM, R_NONE, NULL, IP "ts_status_format",         },
 
   { NULL, 0, 0, 0, 0 },
-};
-
-const struct Mapping SortMethods[] = {
-  { "date",             SORT_DATE },
-  { "date-sent",        SORT_DATE },
-  { "date-received",    SORT_RECEIVED },
-  { "mailbox-order",    SORT_ORDER },
-  { "subject",          SORT_SUBJECT },
-  { "from",             SORT_FROM },
-  { "size",             SORT_SIZE },
-  { "threads",          SORT_THREADS },
-  { "to",               SORT_TO },
-  { "score",            SORT_SCORE },
-  { "spam",             SORT_SPAM },
-  { "label",            SORT_LABEL },
-  { NULL,               0 },
-};
-
-/* same as SortMethods, but with "threads" replaced by "date" */
-
-const struct Mapping SortAuxMethods[] = {
-  { "date",             SORT_DATE },
-  { "date-sent",        SORT_DATE },
-  { "date-received",    SORT_RECEIVED },
-  { "mailbox-order",    SORT_ORDER },
-  { "subject",          SORT_SUBJECT },
-  { "from",             SORT_FROM },
-  { "size",             SORT_SIZE },
-  { "threads",          SORT_DATE },    /* note: sort_aux == threads
-                                         * isn't possible.
-                                         */
-  { "to",               SORT_TO },
-  { "score",            SORT_SCORE },
-  { "spam",             SORT_SPAM },
-  { "label",            SORT_LABEL },
-  { NULL,               0 },
-};
-
-const struct Mapping SortBrowserMethods[] = {
-  { "alpha",    SORT_SUBJECT },
-  { "count",    SORT_COUNT },
-  { "date",     SORT_DATE },
-  { "desc",     SORT_DESC },
-  { "new",      SORT_UNREAD },
-  { "size",     SORT_SIZE },
-  { "unsorted", SORT_ORDER },
-  { NULL,       0 },
-};
-
-const struct Mapping SortAliasMethods[] = {
-  { "alias",    SORT_ALIAS },
-  { "address",  SORT_ADDRESS },
-  { "unsorted", SORT_ORDER },
-  { NULL,       0 },
-};
-
-const struct Mapping SortKeyMethods[] = {
-  { "address",  SORT_ADDRESS },
-  { "date",     SORT_DATE },
-  { "keyid",    SORT_KEYID },
-  { "trust",    SORT_TRUST },
-  { NULL,       0 },
-};
-
-const struct Mapping SortSidebarMethods[] = {
-  { "alpha",            SORT_PATH },
-  { "count",            SORT_COUNT },
-  { "desc",             SORT_DESC },
-  { "flagged",          SORT_FLAGGED },
-  { "mailbox-order",    SORT_ORDER },
-  { "name",             SORT_PATH },
-  { "new",              SORT_UNREAD },  /* kept for compatibility */
-  { "path",             SORT_PATH },
-  { "unread",           SORT_UNREAD },
-  { "unsorted",         SORT_ORDER },
-  { NULL,               0 },
 };
 
 /* functions used to parse commands in a rc file */
