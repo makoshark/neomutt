@@ -31,6 +31,7 @@
 #include <string.h>
 #include "mutt/mutt.h"
 #include "config/mbtable.h"
+#include "config/types.h"
 #include "mutt.h"
 #include "mutt_lua.h"
 #include "address.h"

@@ -26,6 +26,7 @@
 #include <string.h>
 #include <time.h>
 #include "mutt/mutt.h"
+#include "config/sort.h"
 #include "mutt.h"
 #include "thread.h"
 #include "body.h"

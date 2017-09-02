@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mutt/mutt.h"
+#include "config/sort.h"
 #include "mutt.h"
 #include "sidebar.h"
 #include "buffy.h"

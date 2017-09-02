@@ -37,6 +37,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "mutt/mutt.h"
+#include "config/sort.h"
 #include "conn/conn.h"
 #include "mutt.h"
 #include "browser.h"

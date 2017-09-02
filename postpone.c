@@ -30,6 +30,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "mutt/mutt.h"
+#include "config/sort.h"
 #include "mutt.h"
 #include "body.h"
 #include "context.h"

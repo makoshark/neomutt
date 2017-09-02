@@ -81,6 +81,7 @@
 #include <unistd.h>
 #include "imap_private.h"
 #include "mutt/mutt.h"
+#include "config/sort.h"
 #include "conn/conn.h"
 #include "mutt.h"
 #include "imap.h"

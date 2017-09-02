@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include "mutt/mutt.h"
 #include "config/mbtable.h"
+#include "config/sort.h"
 #include "context.h"
 #include "format_flags.h"
 #include "globals.h"
