@@ -52,6 +52,7 @@ const struct Mapping Menus[] = {
   { "postpone", MENU_POST },
   { "pgp", MENU_PGP },
   { "smime", MENU_SMIME },
+  { "notifications", MENU_NOTIFICATIONS },
 #ifdef CRYPT_BACKEND_GPGME
   { "key_select_pgp", MENU_KEY_SELECT_PGP },
   { "key_select_smime", MENU_KEY_SELECT_SMIME },
