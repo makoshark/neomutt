@@ -21,7 +21,6 @@
  */
 
 #include "config.h"
-#include "keymap.h"
 #include "mutt/mapping.h"
 #include "mutt/memory.h"
 #include "mutt/message.h"
@@ -29,14 +28,15 @@
 #include "mutt/list.h"
 #include "mutt/queue.h"
 #include "mutt.h"
-#include "mutt_menu.h"
 #include "notifications.h"
+#include "keymap.h"
+#include "mutt_menu.h"
 #include "opcodes.h"
 
 #include <string.h>
 
-static TAILQ_HEAD(NotificationsHead, Notification) Notifications =
-  TAILQ_HEAD_INITIALIZER(Notifications);
+static TAILQ_HEAD(NotificationsHead,
+                  Notification) Notifications = TAILQ_HEAD_INITIALIZER(Notifications);
 
 struct Notification
 {
@@ -85,8 +85,7 @@ void mutt_notifications_show(void)
   struct Menu *menu = mutt_new_menu(MENU_NOTIFICATIONS);
   menu->title = _("Notifications");
   menu->make_entry = notifications_entry;
-  menu->help = mutt_compile_help(helpstr, sizeof(helpstr), MENU_NOTIFICATIONS,
-                                 NotificationsHelp);
+  menu->help = mutt_compile_help(helpstr, sizeof(helpstr), MENU_NOTIFICATIONS, NotificationsHelp);
   menu->max = nof_notifications;
   mutt_push_current_menu(menu);
 
