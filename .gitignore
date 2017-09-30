@@ -33,13 +33,6 @@ config.status
 stamp-h1
 
 # Ignored within subdirectories
-doc/neomutt.1
-doc/*.html
-doc/makedoc
-doc/manual.txt
-doc/manual.xml
-doc/neomuttrc
-doc/neomuttrc.man
 po/*.gmo
 po/*.mo
 po/POTFILES

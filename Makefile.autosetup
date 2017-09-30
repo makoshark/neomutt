@@ -28,7 +28,7 @@ BINFILES=	$(NEOMUTT)
 LIBBINFILES+=	$(PGPEWRAP) $(PGPRING)
 @endif
 @if HAVE_SMIME
-LIBBINFILES+=	$(SRCDIR)/contrib/smime_keys
+LIBBINFILES+=	$(SRCDIR)/misc/smime_keys
 @endif
 
 # paths
@@ -309,9 +309,8 @@ uninstall: $(UNINSTALL_TARGETS)
 
 # distclean
 distclean: clean
-	$(RM) $(DEPFILES) conststrings.c config.h config.log doc/neomutt.1 \
-		Makefile po/Makefile contrib/Makefile doc/Makefile \
-		autosetup/jimsh0
+	$(RM) $(DEPFILES) conststrings.c config.h config.log Makefile \
+		po/Makefile autosetup/jimsh0
 
 ##############################################################################
 # include generated dependency files
@@ -321,7 +320,5 @@ distclean: clean
 # include special-purpose makefiles, each one of which MUST define the
 # dedicated all-, clean-, install-, and uninstall- targets.
 include po/Makefile
-include contrib/Makefile
-include doc/Makefile
 
 # vim: set ts=8 noexpandtab:

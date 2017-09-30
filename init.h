@@ -24,10 +24,6 @@
 #ifndef _MUTT_INIT_H
 #define _MUTT_INIT_H
 
-#ifdef _MAKEDOC
-#include "config.h"
-#include "doc/makedoc_defs.h"
-#else
 #include <stddef.h>
 #include "mutt.h"
 #include "buffy.h"
@@ -45,11 +41,9 @@
 #ifdef USE_LUA
 #include "mutt_lua.h"
 #endif
-#endif
 
 struct Buffer;
 
-#ifndef _MAKEDOC
 /* flags to parse_set() */
 #define MUTT_SET_INV   (1 << 0) /**< default is to invert all vars */
 #define MUTT_SET_UNSET (1 << 1) /**< default is to unset all vars */
@@ -76,7 +70,6 @@ struct Buffer;
 #define IS_SENSITIVE(x) (((x).flags & F_SENSITIVE) == F_SENSITIVE)
 
 #define UL (unsigned long)
-#endif /* _MAKEDOC */
 
 #ifndef ISPELL
 #define ISPELL "ispell"

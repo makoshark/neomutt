@@ -22,7 +22,6 @@ conn/tunnel.c
 copy.c
 curs_lib.c
 curs_main.c
-doc/makedoc.c
 edit.c
 editmsg.c
 enter.c

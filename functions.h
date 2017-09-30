@@ -36,14 +36,9 @@
  * manual. Lines starting with "**" will be included in the manual.
  */
 
-#ifdef _MAKEDOC
-#include "config.h"
-#include "doc/makedoc_defs.h"
-#else
 #include <stddef.h>
 #include "keymap.h"
 #include "opcodes.h"
-#endif
 
 // clang-format off
 const struct Binding OpGeneric[] = { /* map: generic */
