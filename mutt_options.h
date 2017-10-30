@@ -25,6 +25,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "config/set.h"
 
 struct Buffer;
 
@@ -66,6 +67,7 @@ struct Option
   short        flags;     /**< notification flags, e.g. R_PAGER */
   intptr_t     var;       /**< pointer to the global variable */
   intptr_t     initial;   /**< initial value */
+  cs_validator validator; /**< validator callback function */
 };
 
 int mutt_option_to_string(const struct Option *opt, char *val, size_t len);

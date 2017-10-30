@@ -155,6 +155,18 @@ MUTTLIBS+=	$(LIBCONN)
 ALLOBJS+=	$(LIBCONNOBJS)
 
 ###############################################################################
+# libconfig
+LIBCONFIG=	libconfig.a
+LIBCONFIGOBJS=	config/account.o config/address.o config/bool.o config/dump.o \
+		config/magic.o config/mbtable.o config/number.o config/path.o \
+		config/quad.o config/regex.o config/set.o config/sort.o \
+		config/string.o
+
+CLEANFILES+=	$(LIBCONFIG) $(LIBCONFIGOBJS)
+MUTTLIBS+=	$(LIBCONFIG)
+ALLOBJS+=	$(LIBCONFIGOBJS)
+
+###############################################################################
 # libhcache
 @if USE_HCACHE
 LIBHCACHE=	libhcache.a
@@ -244,6 +256,13 @@ $(LIBCONN): $(PWD)/conn $(LIBCONNOBJS)
 	$(RANLIB) $@
 $(PWD)/conn:
 	$(MKDIR_P) $(PWD)/conn
+
+# libconfig
+$(LIBCONFIG): $(PWD)/config $(LIBCONFIGOBJS)
+	$(AR) cr $@ $(LIBCONFIGOBJS)
+	$(RANLIB) $@
+$(PWD)/config:
+	$(MKDIR_P) $(PWD)/config
 
 # libhcache
 hcache/hcache.o:	hcache/hcversion.h
