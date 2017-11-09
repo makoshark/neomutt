@@ -1,55 +1,19 @@
 notifications:
-  email:
-    recipients:
-      - rich@flatcap.org
-    on_success: change
-    on_failure: always
+  email: false
 
-sudo: false
-dist: trusty
+os: osx
 
 language: c
-compiler: gcc
-cache: ccache
-
-addons:
-  apt:
-    packages:
-      - libgpgme11-dev
-      - libnotmuch-dev
-      - libtokyocabinet-dev
-      - libkyotocabinet-dev
-      - libgdbm-dev
-      - libdb-dev
-      - liblmdb-dev
-      - libqdbm-dev
-      - libslang2-dev
-      - libgnutls-dev
-      - libssl-dev
-      - libsasl2-dev
-      - libgss-dev
-      - xsltproc
-      - lynx
-      - docbook-simple
-      - docbook-xsl
-      - libxml2-utils
-      - gettext
-      - lua5.2
-      - liblua5.2-dev
-      - autopoint
 
 git:
   depth: 3
 
-install:
-  - git clone --depth 1 https://github.com/neomutt/travis-build.git ~/config
-
-before_script:
-  - ccache --zero-stats
-
+env:
+  - COLUMNS=78
+before_install:
+  - source ./macports/bootstrap.sh
 script:
-  - ~/config/build
-
-after_script:
-  - ccache --show-stats
-
+  - sed -i '' "s|@@REPO_PATH@@|${PWD}|g" macports/Portfile
+  - sudo port install "file://${PWD}/macports" || (port log "file://${PWD}/macports" | tail -n 1000)
+  - port contents "file://${PWD}/macports"
+  - neomutt -v
