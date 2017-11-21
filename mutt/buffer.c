@@ -32,11 +32,11 @@
  * | mutt_buffer_addch()    | Add a single character to a Buffer
  * | mutt_buffer_addstr()   | Add a string to a Buffer
  * | mutt_buffer_alloc()    | Create a new Buffer
+ * | mutt_buffer_deinit()   | Release the memory allocated by a Buffer
  * | mutt_buffer_free()     | Release a Buffer and its contents
  * | mutt_buffer_from()     | Create Buffer from an existing string
  * | mutt_buffer_init()     | Initialise a new Buffer
  * | mutt_buffer_is_empty() | Is the Buffer empty?
- * | mutt_buffer_new()      | Create and initialise a Buffer
  * | mutt_buffer_printf()   | Format a string into a Buffer
  * | mutt_buffer_reset()    | Reset an existing Buffer
  */
@@ -50,23 +50,6 @@
 #include "string2.h"
 
 /**
- * mutt_buffer_new - Create and initialise a Buffer
- * @retval ptr New Buffer
- *
- * Call mutt_buffer_free() to release the Buffer.
- */
-struct Buffer *mutt_buffer_new(void)
-{
-  struct Buffer *b = NULL;
-
-  b = mutt_mem_malloc(sizeof(struct Buffer));
-
-  mutt_buffer_init(b);
-
-  return b;
-}
-
-/**
  * mutt_buffer_init - Initialise a new Buffer
  * @param b Buffer to initialise
  *
@@ -77,6 +60,15 @@ void mutt_buffer_init(struct Buffer *b)
   if (!b)
     return;
   memset(b, 0, sizeof(struct Buffer));
+}
+
+/**
+ * mutt_buffer_deinit - Release the memory allocated by a Buffer
+ * @param b Buffer to release
+ */
+void mutt_buffer_deinit(struct Buffer *b)
+{
+  FREE(&b->data);
 }
 
 /**
@@ -106,7 +98,7 @@ struct Buffer *mutt_buffer_from(char *seed)
   if (!seed)
     return NULL;
 
-  b = mutt_buffer_new();
+  b = mutt_mem_calloc(1, sizeof(struct Buffer));
   b->data = mutt_str_strdup(seed);
   b->dsize = mutt_str_strlen(seed);
   b->dptr = (char *) b->data + b->dsize;
@@ -153,7 +145,7 @@ void mutt_buffer_free(struct Buffer **p)
   if (!p || !*p)
     return;
 
-  FREE(&(*p)->data);
+  mutt_buffer_deinit(*p);
   /* dptr is just an offset to data and shouldn't be freed */
   FREE(p);
 }

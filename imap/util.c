@@ -617,10 +617,7 @@ struct ImapData *imap_new_idata(void)
 {
   struct ImapData *idata = mutt_mem_calloc(1, sizeof(struct ImapData));
 
-  idata->cmdbuf = mutt_buffer_new();
-  if (!idata->cmdbuf)
-    FREE(&idata);
-
+  mutt_buffer_init(&idata->cmdbuf);
   idata->cmdslots = ImapPipelineDepth + 2;
   idata->cmds = mutt_mem_calloc(idata->cmdslots, sizeof(*idata->cmds));
 
@@ -642,7 +639,7 @@ void imap_free_idata(struct ImapData **idata)
   FREE(&(*idata)->capstr);
   mutt_list_free(&(*idata)->flags);
   imap_mboxcache_free(*idata);
-  mutt_buffer_free(&(*idata)->cmdbuf);
+  mutt_buffer_deinit(&(*idata)->cmdbuf);
   FREE(&(*idata)->buf);
   mutt_bcache_close(&(*idata)->bcache);
   FREE(&(*idata)->cmds);

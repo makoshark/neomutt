@@ -76,16 +76,13 @@ bool is_display_corrupting_utf8(wchar_t wc)
 
 int mutt_filter_unprintable(char **s)
 {
-  struct Buffer *b = NULL;
+  struct Buffer b = {0};
   wchar_t wc;
   size_t k, k2;
   char scratch[MB_LEN_MAX + 1];
   char *p = *s;
   mbstate_t mbstate1, mbstate2;
 
-  b = mutt_buffer_new();
-  if (!b)
-    return -1;
   memset(&mbstate1, 0, sizeof(mbstate1));
   memset(&mbstate2, 0, sizeof(mbstate2));
   for (; (k = mbrtowc(&wc, p, MB_LEN_MAX, &mbstate1)); p += k)
@@ -102,10 +99,9 @@ int mutt_filter_unprintable(char **s)
       continue;
     k2 = wcrtomb(scratch, wc, &mbstate2);
     scratch[k2] = '\0';
-    mutt_buffer_addstr(b, scratch);
+    mutt_buffer_addstr(&b, scratch);
   }
   FREE(s);
-  *s = b->data ? b->data : mutt_mem_calloc(1, 1);
-  FREE(&b);
+  *s = b.data ? b.data : mutt_mem_calloc(1, 1);
   return 0;
 }

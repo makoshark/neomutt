@@ -27,13 +27,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
+#include "mutt/buffer.h"
 #include "mutt/list.h"
 #ifdef USE_HCACHE
 #include "hcache/hcache.h"
 #endif
 
 struct Account;
-struct Buffer;
 struct Context;
 struct Header;
 struct ImapHeaderData;
@@ -238,7 +238,7 @@ struct ImapData
   int cmdslots;
   int nextcmd;
   int lastcmd;
-  struct Buffer *cmdbuf;
+  struct Buffer cmdbuf;
 
   /* cache ImapStatus of visited mailboxes */
   struct ListHead mboxcache;

@@ -805,23 +805,21 @@ int imap_read_headers(struct ImapData *idata, unsigned int msn_begin, unsigned i
   while (msn_begin <= msn_end && fetch_msn_end < msn_end)
   {
     char *cmd = NULL;
-    struct Buffer *b = NULL;
-
-    b = mutt_buffer_new();
+    struct Buffer b = {0};
     if (evalhc)
     {
       /* In case there are holes in the header cache. */
       evalhc = false;
-      generate_seqset(b, idata, msn_begin, msn_end);
+      generate_seqset(&b, idata, msn_begin, msn_end);
     }
     else
-      mutt_buffer_printf(b, "%u:%u", msn_begin, msn_end);
+      mutt_buffer_printf(&b, "%u:%u", msn_begin, msn_end);
 
     fetch_msn_end = msn_end;
-    safe_asprintf(&cmd, "FETCH %s (UID FLAGS INTERNALDATE RFC822.SIZE %s)", b->data, hdrreq);
+    safe_asprintf(&cmd, "FETCH %s (UID FLAGS INTERNALDATE RFC822.SIZE %s)", b.data, hdrreq);
     imap_cmd_start(idata, cmd);
     FREE(&cmd);
-    mutt_buffer_free(&b);
+    mutt_buffer_deinit(&b);
 
     rc = IMAP_CMD_CONTINUE;
     for (msgno = msn_begin; rc == IMAP_CMD_CONTINUE; msgno++)
