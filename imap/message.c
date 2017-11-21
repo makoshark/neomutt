@@ -560,7 +560,7 @@ static void generate_seqset(struct Buffer *b, struct ImapData *idata,
   /* Too big.  Just query the whole range then. */
   if (chunks == 150 || mutt_str_strlen(b->data) > 500)
   {
-    b->dptr = b->data;
+    mutt_buffer_rewind(b);
     mutt_buffer_printf(b, "%u:%u", msn_begin, msn_end);
   }
 }

@@ -1294,7 +1294,7 @@ int imap_sync_message_for_copy(struct ImapData *idata, struct Header *hdr,
   }
 
   snprintf(uid, sizeof(uid), "%u", HEADER_DATA(hdr)->uid);
-  cmd->dptr = cmd->data;
+  mutt_buffer_rewind(cmd);
   mutt_buffer_addstr(cmd, "UID STORE ");
   mutt_buffer_addstr(cmd, uid);
 

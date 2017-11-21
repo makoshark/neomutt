@@ -337,7 +337,7 @@ static void restore_buffer(struct Buffer **b, const unsigned char *d, int *off, 
 
   restore_char(&(*b)->data, d, off, convert);
   restore_int(&offset, d, off);
-  (*b)->dptr = (*b)->data + offset;
+  mutt_buffer_seek(*b, offset);
   restore_int(&used, d, off);
   (*b)->dsize = used;
   restore_int(&used, d, off);

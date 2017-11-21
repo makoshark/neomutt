@@ -532,7 +532,7 @@ int mutt_extract_token(struct Buffer *dest, struct Buffer *tok, int flags)
   char *pc = NULL;
 
   /* reset the destination pointer to the beginning of the buffer */
-  dest->dptr = dest->data;
+  mutt_buffer_rewind(dest);
 
   SKIPWS(tok->dptr);
   while ((ch = *tok->dptr))

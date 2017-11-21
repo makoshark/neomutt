@@ -1227,8 +1227,7 @@ struct Envelope *mutt_read_rfc822_header(FILE *f, struct Header *hdr,
           /* else overwrite */
           else
           {
-            e->spam->dptr = e->spam->data;
-            *e->spam->dptr = '\0';
+            mutt_buffer_rewind(e->spam);
             mutt_buffer_addstr(e->spam, buf);
           }
         }

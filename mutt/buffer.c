@@ -38,6 +38,8 @@
  * | mutt_buffer_is_empty() | Is the Buffer empty?
  * | mutt_buffer_printf()   | Format a string into a Buffer
  * | mutt_buffer_reset()    | Reset an existing Buffer
+ * | mutt_buffer_rewind()   | Rewind the read/write position of the Buffer
+ * | mutt_buffer_seek()     | Set the read/write position to a specific offset
  */
 
 #include "config.h"
@@ -54,20 +56,20 @@
  *
  * This must not be called on a Buffer that already contains data.
  */
-void mutt_buffer_init(struct Buffer *b)
+void mutt_buffer_init(struct Buffer *buf)
 {
-  if (!b)
+  if (!buf)
     return;
-  memset(b, 0, sizeof(struct Buffer));
+  memset(buf, 0, sizeof(struct Buffer));
 }
 
 /**
  * mutt_buffer_deinit - Release the memory allocated by a Buffer
  * @param b Buffer to release
  */
-void mutt_buffer_deinit(struct Buffer *b)
+void mutt_buffer_deinit(struct Buffer *buf)
 {
-  FREE(&b->data);
+  FREE(&buf->data);
 }
 
 /**
@@ -77,12 +79,12 @@ void mutt_buffer_deinit(struct Buffer *b)
  * This can be called on a Buffer to reset the pointers,
  * effectively emptying it.
  */
-void mutt_buffer_reset(struct Buffer *b)
+void mutt_buffer_reset(struct Buffer *buf)
 {
-  if (!b)
+  if (!buf)
     return;
-  memset(b->data, 0, b->dsize);
-  b->dptr = b->data;
+  memset(buf->data, 0, buf->dsize);
+  mutt_buffer_rewind(buf);
 }
 
 /**
@@ -98,7 +100,7 @@ void mutt_buffer_from(struct Buffer *buf, char *seed)
   mutt_buffer_init(buf);
   buf->data = mutt_str_strdup(seed);
   buf->dsize = mutt_str_strlen(seed);
-  buf->dptr = (char *) buf->data + buf->dsize;
+  mutt_buffer_seek(buf, buf->dsize);
 }
 
 /**
@@ -122,7 +124,7 @@ size_t mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
     size_t offset = buf->dptr - buf->data;
     buf->dsize += (len < 128) ? 128 : len + 1;
     mutt_mem_realloc(&buf->data, buf->dsize);
-    buf->dptr = buf->data + offset;
+    mutt_buffer_seek(buf, offset);
   }
   if (!buf->dptr)
     return 0;
@@ -151,7 +153,7 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
   va_copy(ap_retry, ap);
 
   if (!buf->dptr)
-    buf->dptr = buf->data;
+    mutt_buffer_rewind(buf);
 
   doff = buf->dptr - buf->data;
   blen = buf->dsize - doff;
@@ -161,7 +163,7 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
     blen = 128;
     buf->dsize += blen;
     mutt_mem_realloc(&buf->data, buf->dsize);
-    buf->dptr = buf->data + doff;
+    mutt_buffer_seek(buf, doff);
   }
   len = vsnprintf(buf->dptr, blen, fmt, ap);
   if (len >= blen)
@@ -171,7 +173,7 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
       blen = 128;
     buf->dsize += blen;
     mutt_mem_realloc(&buf->data, buf->dsize);
-    buf->dptr = buf->data + doff;
+    mutt_buffer_seek(buf, doff);
     len = vsnprintf(buf->dptr, len, fmt, ap_retry);
   }
   if (len > 0)
@@ -240,4 +242,23 @@ struct Buffer *mutt_buffer_alloc(size_t size)
   b->dsize = size;
 
   return b;
+}
+
+/**
+ * mutt_buffer_rewind - Rewind the read/write position of the Buffer
+ * @param buf Buffer to rewind
+ */
+void mutt_buffer_rewind(struct Buffer *buf)
+{
+  mutt_buffer_seek(buf, 0);
+}
+
+/**
+ * mutt_buffer_seek - Set the read/write position to a specific offset
+ * @param buf Buffer to rewind
+ * @param off Offset
+ */
+void mutt_buffer_seek(struct Buffer *buf, size_t off)
+{
+  buf->dptr = buf->data + off;
 }
