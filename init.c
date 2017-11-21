@@ -3146,12 +3146,11 @@ static int parse_source(struct Buffer *tmp, struct Buffer *token,
 int mutt_parse_rc_line(/* const */ char *line, struct Buffer *token, struct Buffer *err)
 {
   int i, r = 0;
-  struct Buffer expn;
+  struct Buffer expn = {0};
 
   if (!line || !*line)
     return 0;
 
-  mutt_buffer_init(&expn);
   expn.data = expn.dptr = line;
   expn.dsize = mutt_str_strlen(line);
 
