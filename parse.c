@@ -1236,13 +1236,15 @@ struct Envelope *mutt_read_rfc822_header(FILE *f, struct Header *hdr,
         /* spam tag is new, and match expr is non-empty; copy */
         else if (!e->spam && *buf)
         {
-          e->spam = mutt_buffer_from(buf);
+          e->spam = mutt_mem_calloc(1, sizeof(struct Buffer));
+          mutt_buffer_from(e->spam, buf);
         }
 
         /* match expr is empty; plug in null string if no existing tag */
         else if (!e->spam)
         {
-          e->spam = mutt_buffer_from("");
+          e->spam = mutt_mem_calloc(1, sizeof(struct Buffer));
+          mutt_buffer_from(e->spam, "");
         }
 
         if (e->spam && e->spam->data)

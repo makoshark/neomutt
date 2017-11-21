@@ -798,7 +798,7 @@ void mutt_expando_format(char *buf, size_t buflen, size_t col, int cols, const c
     {
       struct Buffer word = {0};
       struct Buffer command = {0};
-      struct Buffer *srcbuf = NULL;
+      struct Buffer srcbuf = {0};
       char srccopy[LONG_STRING];
       int i = 0;
 
@@ -808,17 +808,17 @@ void mutt_expando_format(char *buf, size_t buflen, size_t col, int cols, const c
       srccopy[n - 1] = '\0';
 
       /* prepare BUFFERs */
-      srcbuf = mutt_buffer_from(srccopy);
-      srcbuf->dptr = srcbuf->data;
+      mutt_buffer_from(&srcbuf, srccopy);
+      srcbuf.dptr = srcbuf.data;
 
       /* Iterate expansions across successive arguments */
       do
       {
         /* Extract the command name and copy to command line */
-        mutt_debug(3, "fmtpipe +++: %s\n", srcbuf->dptr);
+        mutt_debug(3, "fmtpipe +++: %s\n", srcbuf.dptr);
         if (word.data)
           *word.data = '\0';
-        mutt_extract_token(&word, srcbuf, 0);
+        mutt_extract_token(&word, &srcbuf, 0);
         mutt_debug(3, "fmtpipe %2d: %s\n", i++, word.data);
         mutt_buffer_addch(&command, '\'');
         mutt_expando_format(buf, sizeof(buf), 0, cols, word.data, callback,
@@ -836,7 +836,7 @@ void mutt_expando_format(char *buf, size_t buflen, size_t col, int cols, const c
         }
         mutt_buffer_addch(&command, '\'');
         mutt_buffer_addch(&command, ' ');
-      } while (MoreArgs(srcbuf));
+      } while (MoreArgs(&srcbuf));
 
       mutt_debug(3, "fmtpipe > %s\n", command.data);
 
@@ -899,7 +899,7 @@ void mutt_expando_format(char *buf, size_t buflen, size_t col, int cols, const c
         *wptr = '\0';
       }
 
-      mutt_buffer_free(&srcbuf);
+      mutt_buffer_deinit(&srcbuf);
       mutt_buffer_deinit(&word);
       mutt_buffer_deinit(&command);
       return;

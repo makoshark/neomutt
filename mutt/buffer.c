@@ -34,7 +34,7 @@
  * | mutt_buffer_alloc()    | Create a new Buffer
  * | mutt_buffer_deinit()   | Release the memory allocated by a Buffer
  * | mutt_buffer_free()     | Release a Buffer and its contents
- * | mutt_buffer_from()     | Create Buffer from an existing string
+ * | mutt_buffer_from()     | Initialize a Buffer from an existing string
  * | mutt_buffer_init()     | Initialise a new Buffer
  * | mutt_buffer_is_empty() | Is the Buffer empty?
  * | mutt_buffer_printf()   | Format a string into a Buffer
@@ -87,22 +87,19 @@ void mutt_buffer_reset(struct Buffer *b)
 }
 
 /**
- * mutt_buffer_from - Create Buffer from an existing string
+ * mutt_buffer_from - Initialize a Buffer from an existing string
+ * @param buf Buffer to initialize
  * @param seed String to put in the Buffer
- * @retval ptr New Buffer
  */
-struct Buffer *mutt_buffer_from(char *seed)
+void mutt_buffer_from(struct Buffer *buf, char *seed)
 {
-  struct Buffer *b = NULL;
-
   if (!seed)
-    return NULL;
+    return;
 
-  b = mutt_mem_calloc(1, sizeof(struct Buffer));
-  b->data = mutt_str_strdup(seed);
-  b->dsize = mutt_str_strlen(seed);
-  b->dptr = (char *) b->data + b->dsize;
-  return b;
+  mutt_buffer_init(buf);
+  buf->data = mutt_str_strdup(seed);
+  buf->dsize = mutt_str_strlen(seed);
+  buf->dptr = (char *) buf->data + buf->dsize;
 }
 
 /**
