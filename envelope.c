@@ -91,7 +91,11 @@ void mutt_env_free(struct Envelope **p)
   FREE(&(*p)->x_comment_to);
 #endif
 
-  mutt_buffer_free(&(*p)->spam);
+  if ((*p)->spam)
+  {
+    mutt_buffer_deinit((*p)->spam);
+    FREE(&(*p)->spam);
+  }
 
   mutt_list_free(&(*p)->references);
   mutt_list_free(&(*p)->in_reply_to);
@@ -160,7 +164,11 @@ void mutt_env_merge(struct Envelope *base, struct Envelope **extra)
   }
   /* spam and user headers should never be hashed, and the new envelope may
     * have better values. Use new versions regardless. */
-  mutt_buffer_free(&base->spam);
+  if (base->spam)
+  {
+    mutt_buffer_deinit(base->spam);
+    FREE(&base->spam);
+  }
   mutt_list_free(&base->userhdrs);
   MOVE_ELEM(spam);
   MOVE_STAILQ(userhdrs);

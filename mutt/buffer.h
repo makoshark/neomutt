@@ -44,7 +44,6 @@ struct Buffer *mutt_buffer_alloc(size_t size);
 bool           mutt_buffer_is_empty(const struct Buffer *buf);
 size_t mutt_buffer_addch(struct Buffer *buf, char c);
 size_t mutt_buffer_addstr(struct Buffer *buf, const char *s);
-void mutt_buffer_free(struct Buffer **p);
 void mutt_buffer_from(struct Buffer *buf, char *seed);
 void mutt_buffer_init(struct Buffer *buf);
 void mutt_buffer_deinit(struct Buffer *buf);

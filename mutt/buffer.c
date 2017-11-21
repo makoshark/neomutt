@@ -33,7 +33,6 @@
  * | mutt_buffer_addstr()   | Add a string to a Buffer
  * | mutt_buffer_alloc()    | Create a new Buffer
  * | mutt_buffer_deinit()   | Release the memory allocated by a Buffer
- * | mutt_buffer_free()     | Release a Buffer and its contents
  * | mutt_buffer_from()     | Initialize a Buffer from an existing string
  * | mutt_buffer_init()     | Initialise a new Buffer
  * | mutt_buffer_is_empty() | Is the Buffer empty?
@@ -131,20 +130,6 @@ size_t mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
   buf->dptr += len;
   *(buf->dptr) = '\0';
   return len;
-}
-
-/**
- * mutt_buffer_free - Release a Buffer and its contents
- * @param p Buffer pointer to free and NULL
- */
-void mutt_buffer_free(struct Buffer **p)
-{
-  if (!p || !*p)
-    return;
-
-  mutt_buffer_deinit(*p);
-  /* dptr is just an offset to data and shouldn't be freed */
-  FREE(p);
 }
 
 /**
