@@ -796,15 +796,11 @@ void mutt_expando_format(char *buf, size_t buflen, size_t col, int cols, const c
     /* n-off is the number of backslashes. */
     if (off > 0 && ((n - off) % 2) == 0)
     {
-      struct Buffer word;
-      struct Buffer command;
-      struct Buffer srcbuf;
+      struct Buffer word = {0};
+      struct Buffer command = {0};
+      struct Buffer srcbuf = {0};
       char srccopy[LONG_STRING];
       int i = 0;
-
-      mutt_buffer_init(&word);
-      mutt_buffer_init(&command);
-      mutt_buffer_init(&srcbuf);
 
       mutt_debug(3, "fmtpipe = %s\n", src);
 
