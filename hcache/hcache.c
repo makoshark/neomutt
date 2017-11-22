@@ -318,7 +318,6 @@ static unsigned char *dump_buffer(struct Buffer *b, unsigned char *d, int *off, 
   d = dump_char_size(b->data, d, off, b->dsize + 1, convert);
   d = dump_int(b->dptr - b->data, d, off);
   d = dump_int(b->dsize, d, off);
-  d = dump_int(b->destroy, d, off);
 
   return d;
 }
@@ -340,8 +339,6 @@ static void restore_buffer(struct Buffer **b, const unsigned char *d, int *off, 
   mutt_buffer_seek(*b, offset);
   restore_int(&used, d, off);
   (*b)->dsize = used;
-  restore_int(&used, d, off);
-  (*b)->destroy = used;
 }
 
 static unsigned char *dump_parameter(struct Parameter *p, unsigned char *d,

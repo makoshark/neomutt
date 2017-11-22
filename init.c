@@ -613,9 +613,7 @@ int mutt_extract_token(struct Buffer *dest, struct Buffer *tok, int flags)
     {
       FILE *fp = NULL;
       pid_t pid;
-      char *cmd = NULL, *ptr = NULL;
-      size_t expnlen;
-      struct Buffer expn;
+      char *cmd = NULL;
       int line = 0;
 
       pc = tok->dptr;
@@ -647,8 +645,9 @@ int mutt_extract_token(struct Buffer *dest, struct Buffer *tok, int flags)
       tok->dptr = pc + 1;
 
       /* read line */
-      mutt_buffer_init(&expn);
-      expn.data = mutt_file_read_line(NULL, &expn.dsize, fp, &line, 0);
+      size_t dummy;
+      char *filter_out = mutt_file_read_line(NULL, &dummy, fp, &line, 0);
+      size_t filter_out_len = mutt_str_strlen(filter_out);
       mutt_file_fclose(&fp);
       mutt_wait_filter(pid);
 
@@ -656,25 +655,22 @@ int mutt_extract_token(struct Buffer *dest, struct Buffer *tok, int flags)
          plus whatever else was left on the original line */
       /* BUT: If this is inside a quoted string, directly add output to
        * the token */
-      if (expn.data && qc)
+      if (filter_out)
       {
-        mutt_buffer_addstr(dest, expn.data);
-        FREE(&expn.data);
-      }
-      else if (expn.data)
-      {
-        expnlen = mutt_str_strlen(expn.data);
-        tok->dsize = expnlen + mutt_str_strlen(tok->dptr) + 1;
-        ptr = mutt_mem_malloc(tok->dsize);
-        memcpy(ptr, expn.data, expnlen);
-        strcpy(ptr + expnlen, tok->dptr);
-        if (tok->destroy)
-          FREE(&tok->data);
-        tok->data = ptr;
-        tok->dptr = ptr;
-        tok->destroy = 1; /* mark that the caller should destroy this data */
-        ptr = NULL;
-        FREE(&expn.data);
+        if (qc)
+        {
+          mutt_buffer_add(dest, filter_out, filter_out_len);
+        }
+        else
+        {
+          mutt_buffer_deinit(tok);
+          tok->dsize = filter_out_len + mutt_str_strlen(tok->dptr) + 1;
+          char *ptr = mutt_mem_malloc(tok->dsize);
+          memcpy(ptr, filter_out, filter_out_len);
+          strcpy(ptr + filter_out_len, tok->dptr);
+          tok->data = tok->dptr = ptr;
+        }
+        FREE(&filter_out);
       }
     }
     else if (ch == '$' && (!qc || qc == '"') &&
@@ -3151,8 +3147,8 @@ int mutt_parse_rc_line(/* const */ char *line, struct Buffer *token, struct Buff
   if (!line || !*line)
     return 0;
 
-  expn.data = expn.dptr = line;
-  expn.dsize = mutt_str_strlen(line);
+  mutt_buffer_addstr(&expn, line);
+  mutt_buffer_rewind(&expn);
 
   *err->data = 0;
 
@@ -3187,8 +3183,7 @@ int mutt_parse_rc_line(/* const */ char *line, struct Buffer *token, struct Buff
     }
   }
 finish:
-  if (expn.destroy)
-    FREE(&expn.data);
+  mutt_buffer_deinit(&expn);
   return r;
 }
 
