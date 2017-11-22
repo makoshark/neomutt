@@ -805,7 +805,8 @@ int imap_read_headers(struct ImapData *idata, unsigned int msn_begin, unsigned i
   while (msn_begin <= msn_end && fetch_msn_end < msn_end)
   {
     char *cmd = NULL;
-    struct Buffer b = {0};
+    struct Buffer b;
+    mutt_buffer_init(&b);
     if (evalhc)
     {
       /* In case there are holes in the header cache. */
