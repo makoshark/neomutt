@@ -981,6 +981,7 @@ char *parse_keymap(int *menu, struct Buffer *s, int maxmenus, int *nummenus, str
   struct Buffer buf = {0};
   int i = 0;
   char *p = NULL, *q = NULL;
+  char *ret = NULL;
 
   /* menu name */
   mutt_extract_token(&buf, s, 0);
@@ -997,7 +998,7 @@ char *parse_keymap(int *menu, struct Buffer *s, int maxmenus, int *nummenus, str
       if (menu[i] == -1)
       {
         snprintf(err->data, err->dsize, _("%s: no such menu"), p);
-        goto error;
+        goto end;
       }
       i++;
       if (q)
@@ -1014,15 +1015,19 @@ char *parse_keymap(int *menu, struct Buffer *s, int maxmenus, int *nummenus, str
       mutt_str_strfcpy(err->data, _("null key sequence"), err->dsize);
     }
     else if (MoreArgs(s))
-      return buf.data;
+    {
+      ret = mutt_str_strdup(buf.data);
+      goto end;
+    }
   }
   else
   {
     mutt_str_strfcpy(err->data, _("too few arguments"), err->dsize);
   }
-error:
+
+end:
   mutt_buffer_reinit(&buf);
-  return NULL;
+  return ret;
 }
 
 static int try_bind(char *key, int menu, char *func,
