@@ -484,7 +484,7 @@ static void cmd_parse_lsub(struct ImapData *idata, char *s)
 {
   char buf[STRING];
   char errstr[STRING];
-  struct Buffer err, token;
+  struct Buffer err = {0}, token = {0};
   struct Url url;
   struct ImapList list;
 
@@ -518,13 +518,11 @@ static void cmd_parse_lsub(struct ImapData *idata, char *s)
     url.user = NULL;
   url_tostring(&url, buf + 11, sizeof(buf) - 11, 0);
   mutt_str_strcat(buf, sizeof(buf), "\"");
-  mutt_buffer_init(&token);
-  mutt_buffer_init(&err);
   err.data = errstr;
   err.dsize = sizeof(errstr);
   if (mutt_parse_rc_line(buf, &token, &err))
     mutt_debug(1, "Error adding subscribed mailbox: %s\n", errstr);
-  FREE(&token.data);
+  mutt_buffer_reinit(&token);
 }
 
 /**

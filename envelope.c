@@ -93,7 +93,7 @@ void mutt_env_free(struct Envelope **p)
 
   if ((*p)->spam)
   {
-    mutt_buffer_deinit((*p)->spam);
+    mutt_buffer_reinit((*p)->spam);
     FREE(&(*p)->spam);
   }
 
@@ -166,7 +166,7 @@ void mutt_env_merge(struct Envelope *base, struct Envelope **extra)
     * have better values. Use new versions regardless. */
   if (base->spam)
   {
-    mutt_buffer_deinit(base->spam);
+    mutt_buffer_reinit(base->spam);
     FREE(&base->spam);
   }
   mutt_list_free(&base->userhdrs);

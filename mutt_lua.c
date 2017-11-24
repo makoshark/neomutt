@@ -60,14 +60,10 @@ static int handle_error(lua_State *l)
 static int lua_mutt_call(lua_State *l)
 {
   mutt_debug(2, " * lua_mutt_call()\n");
-  struct Buffer token, expn, err;
+  struct Buffer token = {0}, expn = {0}, err = {0};
   char buffer[LONG_STRING] = "";
   const struct Command *command = NULL;
   int rc = 0;
-
-  mutt_buffer_init(&token);
-  mutt_buffer_init(&expn);
-  mutt_buffer_init(&err);
 
   err.dsize = STRING;
   err.data = mutt_mem_malloc(err.dsize);
@@ -108,7 +104,7 @@ static int lua_mutt_call(lua_State *l)
       rc++;
   }
 
-  FREE(&err.data);
+  mutt_buffer_reinit(&err);
 
   return rc;
 }
@@ -266,12 +262,9 @@ static int lua_mutt_get(lua_State *l)
 static int lua_mutt_enter(lua_State *l)
 {
   mutt_debug(2, " * lua_mutt_enter()\n");
-  struct Buffer token, err;
+  struct Buffer token = {0}, err = {0};
   char *buffer = mutt_str_strdup(lua_tostring(l, -1));
   int rc = 0;
-
-  mutt_buffer_init(&err);
-  mutt_buffer_init(&token);
 
   err.dsize = STRING;
   err.data = mutt_mem_malloc(err.dsize);
@@ -290,7 +283,7 @@ static int lua_mutt_enter(lua_State *l)
   }
 
   FREE(&buffer);
-  FREE(&err.data);
+  mutt_buffer_reinit(&err);
 
   return rc;
 }

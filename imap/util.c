@@ -638,7 +638,7 @@ void imap_free_idata(struct ImapData **idata)
   FREE(&(*idata)->capstr);
   mutt_list_free(&(*idata)->flags);
   imap_mboxcache_free(*idata);
-  mutt_buffer_deinit(&(*idata)->cmdbuf);
+  mutt_buffer_reinit(&(*idata)->cmdbuf);
   FREE(&(*idata)->buf);
   mutt_bcache_close(&(*idata)->bcache);
   FREE(&(*idata)->cmds);

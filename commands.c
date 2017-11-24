@@ -638,19 +638,17 @@ void mutt_shell_escape(void)
  */
 void mutt_enter_command(void)
 {
-  struct Buffer err, token;
+  struct Buffer err = {0}, token = {0};
   char buffer[LONG_STRING];
   int r;
 
   buffer[0] = '\0';
   if (mutt_get_field(":", buffer, sizeof(buffer), MUTT_COMMAND) != 0 || !buffer[0])
     return;
-  mutt_buffer_init(&err);
   err.dsize = STRING;
   err.data = mutt_mem_malloc(err.dsize);
-  mutt_buffer_init(&token);
   r = mutt_parse_rc_line(buffer, &token, &err);
-  FREE(&token.data);
+  mutt_buffer_reinit(&token);
   if (err.data[0])
   {
     /* since errbuf could potentially contain printf() sequences in it,
@@ -662,7 +660,7 @@ void mutt_enter_command(void)
       mutt_error("%s", err.data);
   }
 
-  FREE(&err.data);
+  mutt_buffer_reinit(&err);
 }
 
 void mutt_display_address(struct Envelope *env)

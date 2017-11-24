@@ -32,11 +32,11 @@
  * | mutt_buffer_addch()    | Add a single character to a Buffer
  * | mutt_buffer_addstr()   | Add a string to a Buffer
  * | mutt_buffer_alloc()    | Create a new Buffer
- * | mutt_buffer_deinit()   | Release the memory allocated by a Buffer
  * | mutt_buffer_from()     | Initialize a Buffer from an existing string
  * | mutt_buffer_init()     | Initialise a new Buffer
  * | mutt_buffer_is_empty() | Is the Buffer empty?
  * | mutt_buffer_printf()   | Format a string into a Buffer
+ * | mutt_buffer_reinit()   | Release all memory and reinitialize a Buffer
  * | mutt_buffer_reset()    | Reset an existing Buffer
  * | mutt_buffer_rewind()   | Rewind the read/write position of the Buffer
  * | mutt_buffer_seek()     | Set the read/write position to a specific offset
@@ -64,12 +64,13 @@ void mutt_buffer_init(struct Buffer *buf)
 }
 
 /**
- * mutt_buffer_deinit - Release the memory allocated by a Buffer
- * @param b Buffer to release
+ * mutt_buffer_reinit - Release all memory and reinitialize a Buffer
+ * @param b Buffer to release and reinitialize
  */
-void mutt_buffer_deinit(struct Buffer *buf)
+void mutt_buffer_reinit(struct Buffer *buf)
 {
   FREE(&buf->data);
+  mutt_buffer_init(buf);
 }
 
 /**

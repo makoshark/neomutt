@@ -1254,7 +1254,7 @@ int imap_exec_msgset(struct ImapData *idata, const char *pre, const char *post,
   rc = count;
 
 out:
-  mutt_buffer_deinit(&cmd);
+  mutt_buffer_reinit(&cmd);
   if (oldsort != Sort)
   {
     Sort = oldsort;
@@ -1701,7 +1701,7 @@ void imap_mboxcache_free(struct ImapData *idata)
  */
 int imap_search(struct Context *ctx, const struct Pattern *pat)
 {
-  struct Buffer buf;
+  struct Buffer buf = {0};
   struct ImapData *idata = ctx->data;
   for (int i = 0; i < ctx->msgcount; i++)
     ctx->hdrs[i]->matched = false;
@@ -1709,20 +1709,19 @@ int imap_search(struct Context *ctx, const struct Pattern *pat)
   if (!do_search(pat, 1))
     return 0;
 
-  mutt_buffer_init(&buf);
   mutt_buffer_addstr(&buf, "UID SEARCH ");
   if (compile_search(ctx, pat, &buf) < 0)
   {
-    FREE(&buf.data);
+    mutt_buffer_reinit(&buf);
     return -1;
   }
   if (imap_exec(idata, buf.data, 0) < 0)
   {
-    FREE(&buf.data);
+    mutt_buffer_reinit(&buf);
     return -1;
   }
 
-  FREE(&buf.data);
+  mutt_buffer_reinit(&buf);
   return 0;
 }
 
@@ -1739,7 +1738,7 @@ int imap_subscribe(char *path, bool subscribe)
   char buf[LONG_STRING];
   char mbox[LONG_STRING];
   char errstr[STRING];
-  struct Buffer err, token;
+  struct Buffer err = {0}, token = {0};
   struct ImapMbox mx;
 
   if (!mx_is_imap(path) || imap_parse_path(path, &mx) || !mx.mbox)
@@ -1757,14 +1756,12 @@ int imap_subscribe(char *path, bool subscribe)
 
   if (ImapCheckSubscribed)
   {
-    mutt_buffer_init(&token);
-    mutt_buffer_init(&err);
     err.data = errstr;
     err.dsize = sizeof(errstr);
     snprintf(mbox, sizeof(mbox), "%smailboxes \"%s\"", subscribe ? "" : "un", path);
     if (mutt_parse_rc_line(mbox, &token, &err))
       mutt_debug(1, "Error adding subscribed mailbox: %s\n", errstr);
-    FREE(&token.data);
+    mutt_buffer_reinit(&token);
   }
 
   if (subscribe)
@@ -1996,7 +1993,7 @@ int imap_fast_trash(struct Context *ctx, char *dest)
   rc = 0;
 
 out:
-  mutt_buffer_deinit(&sync_cmd);
+  mutt_buffer_reinit(&sync_cmd);
   FREE(&mx.mbox);
 
   return rc < 0 ? -1 : rc;
@@ -2186,15 +2183,14 @@ static int imap_open_mailbox(struct Context *ctx)
     else
     {
       struct ListNode *np;
-      struct Buffer flag_buffer;
-      mutt_buffer_init(&flag_buffer);
+      struct Buffer flag_buffer = {0};
       mutt_buffer_printf(&flag_buffer, "Mailbox flags: ");
       STAILQ_FOREACH(np, &idata->flags, entries)
       {
         mutt_buffer_printf(&flag_buffer, "[%s] ", np->data);
       }
       mutt_debug(3, "%s\n", flag_buffer.data);
-      FREE(&flag_buffer.data);
+      mutt_buffer_reinit(&flag_buffer);
     }
   }
 
@@ -2719,7 +2715,7 @@ static int imap_commit_message_tags(struct Context *ctx, struct Header *h, char 
      * continue to add new flags *
      */
     int rc = imap_exec(idata, cmd.data, 0);
-    mutt_buffer_deinit(&cmd);
+    mutt_buffer_reinit(&cmd);
     if (rc != 0)
     {
       return -1;
@@ -2737,7 +2733,7 @@ static int imap_commit_message_tags(struct Context *ctx, struct Header *h, char 
     mutt_buffer_addstr(&cmd, ")");
 
     int rc = imap_exec(idata, cmd.data, 0);
-    mutt_buffer_deinit(&cmd);
+    mutt_buffer_reinit(&cmd);
    
     if (rc != 0)
     {

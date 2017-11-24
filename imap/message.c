@@ -819,7 +819,7 @@ int imap_read_headers(struct ImapData *idata, unsigned int msn_begin, unsigned i
     safe_asprintf(&cmd, "FETCH %s (UID FLAGS INTERNALDATE RFC822.SIZE %s)", b.data, hdrreq);
     imap_cmd_start(idata, cmd);
     FREE(&cmd);
-    mutt_buffer_deinit(&b);
+    mutt_buffer_reinit(&b);
 
     rc = IMAP_CMD_CONTINUE;
     for (msgno = msn_begin; rc == IMAP_CMD_CONTINUE; msgno++)
@@ -1389,7 +1389,7 @@ fail:
 int imap_copy_messages(struct Context *ctx, struct Header *h, char *dest, int delete)
 {
   struct ImapData *idata = NULL;
-  struct Buffer cmd, sync_cmd;
+  struct Buffer cmd = {0}, sync_cmd = {0};
   char mbox[LONG_STRING];
   char mmbox[LONG_STRING];
   char prompt[LONG_STRING];
@@ -1427,8 +1427,8 @@ int imap_copy_messages(struct Context *ctx, struct Header *h, char *dest, int de
   /* loop in case of TRYCREATE */
   do
   {
-    mutt_buffer_init(&sync_cmd);
-    mutt_buffer_init(&cmd);
+    mutt_buffer_reinit(&sync_cmd);
+    mutt_buffer_reinit(&cmd);
 
     /* Null Header* means copy tagged messages */
     if (!h)
@@ -1554,10 +1554,8 @@ int imap_copy_messages(struct Context *ctx, struct Header *h, char *dest, int de
   rc = 0;
 
 out:
-  if (cmd.data)
-    FREE(&cmd.data);
-  if (sync_cmd.data)
-    FREE(&sync_cmd.data);
+  mutt_buffer_reinit(&cmd);
+  mutt_buffer_reinit(&sync_cmd);
   FREE(&mx.mbox);
 
   return rc < 0 ? -1 : rc;

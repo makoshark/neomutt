@@ -899,9 +899,9 @@ void mutt_expando_format(char *buf, size_t buflen, size_t col, int cols, const c
         *wptr = '\0';
       }
 
-      mutt_buffer_deinit(&srcbuf);
-      mutt_buffer_deinit(&word);
-      mutt_buffer_deinit(&command);
+      mutt_buffer_reinit(&srcbuf);
+      mutt_buffer_reinit(&word);
+      mutt_buffer_reinit(&command);
       return;
     }
   }
