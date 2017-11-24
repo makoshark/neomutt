@@ -242,17 +242,19 @@ int mutt_parse_hook(struct Buffer *buf, struct Buffer *s, unsigned long data,
 
   ptr = mutt_mem_calloc(1, sizeof(struct Hook));
   ptr->type = data;
-  ptr->command = command.data;
+  ptr->command = mutt_str_strdup(command.data);
   ptr->pattern = pat;
-  ptr->regex.pattern = pattern.data;
+  ptr->regex.pattern = mutt_str_strdup(pattern.data);
   ptr->regex.regex = rx;
   ptr->regex.not = not;
   TAILQ_INSERT_TAIL(&Hooks, ptr, entries);
+
+  mutt_buffer_reinit(&pattern);
+  mutt_buffer_reinit(&command);
   return 0;
 
 error:
-  if (~data & MUTT_GLOBALHOOK) /* NOT a global hook */
-    mutt_buffer_reinit(&pattern);
+  mutt_buffer_reinit(&pattern);
   mutt_buffer_reinit(&command);
   return -1;
 }
