@@ -86,8 +86,8 @@ int mutt_parse_score(struct Buffer *buf, struct Buffer *s, unsigned long data,
     mutt_str_strfcpy(err->data, _("score: too few arguments"), err->dsize);
     return -1;
   }
-  pattern = buf->data;
-  mutt_buffer_init(buf);
+  pattern = mutt_str_strdup(buf->data);
+  mutt_buffer_reinit(buf);
   mutt_extract_token(buf, s, 0);
   if (MoreArgs(s))
   {
