@@ -1879,8 +1879,8 @@ static int parse_my_hdr(struct Buffer *buf, struct Buffer *s,
     FREE(&n->data);
   }
 
-  n->data = buf->data;
-  mutt_buffer_init(buf);
+  n->data = mutt_str_strdup(buf->data);
+  mutt_buffer_reinit(buf);
 
   return 0;
 }
