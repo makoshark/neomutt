@@ -1236,7 +1236,7 @@ int imap_exec_msgset(struct ImapData *idata, const char *pre, const char *post,
 
   do
   {
-    cmd.dptr = cmd.data;
+    mutt_buffer_rewind(&cmd);
     mutt_buffer_printf(&cmd, "%s ", pre);
     rc = make_msg_set(idata, &cmd, flag, changed, invert, &pos);
     if (rc > 0)

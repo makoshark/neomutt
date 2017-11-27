@@ -809,7 +809,7 @@ void mutt_expando_format(char *buf, size_t buflen, size_t col, int cols, const c
 
       /* prepare BUFFERs */
       mutt_buffer_from(&srcbuf, srccopy);
-      srcbuf.dptr = srcbuf.data;
+      mutt_buffer_rewind(&srcbuf);
 
       /* Iterate expansions across successive arguments */
       do
