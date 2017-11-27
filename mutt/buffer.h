@@ -32,9 +32,11 @@
  */
 struct Buffer
 {
-  char *data;   /**< pointer to data */
-  char *dptr;   /**< current read/write position */
-  size_t dsize; /**< length of data */
+  char *data;                       /**< pointer to data */
+  char *dptr;                       /**< current read/write position */
+  size_t dsize;                     /**< length of data */
+# define BUFFER_SSO_SIZE 128        /**< small-string optimization smallness */
+  char sso[BUFFER_SSO_SIZE];        /**< small-string optimization buffer */
 };
 
 #define MoreArgs(p) (*(p)->dptr && (*(p)->dptr != ';') && (*(p)->dptr != '#'))
