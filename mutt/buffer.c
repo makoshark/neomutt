@@ -37,6 +37,7 @@
  * | mutt_buffer_is_empty() | Is the Buffer empty?
  * | mutt_buffer_printf()   | Format a string into a Buffer
  * | mutt_buffer_reinit()   | Release all memory and reinitialize a Buffer
+ * | mutt_buffer_reserve()  | Make sure we can append len bytes without reallocation
  * | mutt_buffer_reset()    | Reset an existing Buffer
  * | mutt_buffer_rewind()   | Rewind the read/write position of the Buffer
  * | mutt_buffer_seek()     | Set the read/write position to a specific offset
@@ -55,7 +56,7 @@
  * @param b Buffer to reserve
  * @param len Number of bytes to reserve
  */
-static void mutt_buffer_reserve(struct Buffer *buf, size_t len)
+void mutt_buffer_reserve(struct Buffer *buf, size_t len)
 {
   if (!buf || len == 0)
     return;
