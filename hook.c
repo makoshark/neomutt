@@ -128,7 +128,8 @@ int mutt_parse_hook(struct Buffer *buf, struct Buffer *s, unsigned long data,
     }
 
     mutt_buffer_reinit(&pattern);
-    pattern.data = mutt_str_strdup(path);
+    mutt_buffer_addstr(&pattern, path);
+    mutt_buffer_rewind(&pattern);
   }
 #ifdef USE_COMPRESSED
   else if (data & (MUTT_APPENDHOOK | MUTT_OPENHOOK | MUTT_CLOSEHOOK))
@@ -153,7 +154,8 @@ int mutt_parse_hook(struct Buffer *buf, struct Buffer *s, unsigned long data,
     mutt_str_strfcpy(tmp, pattern.data, sizeof(tmp));
     mutt_check_simple(tmp, sizeof(tmp), DefaultHook);
     mutt_buffer_reinit(&pattern);
-    pattern.data = mutt_str_strdup(tmp);
+    mutt_buffer_addstr(&pattern, tmp);
+    mutt_buffer_rewind(&pattern);
   }
 
   if (data & (MUTT_MBOXHOOK | MUTT_SAVEHOOK | MUTT_FCCHOOK))
@@ -161,7 +163,8 @@ int mutt_parse_hook(struct Buffer *buf, struct Buffer *s, unsigned long data,
     mutt_str_strfcpy(path, command.data, sizeof(path));
     mutt_expand_path(path, sizeof(path));
     mutt_buffer_reinit(&command);
-    command.data = mutt_str_strdup(path);
+    mutt_buffer_addstr(&command, path);
+    mutt_buffer_rewind(&command);
   }
 
   /* check to make sure that a matching hook doesn't already exist */
@@ -201,7 +204,8 @@ int mutt_parse_hook(struct Buffer *buf, struct Buffer *s, unsigned long data,
          * a common action to perform is to change the default (.) entry
          * based upon some other information. */
         FREE(&ptr->command);
-        ptr->command = command.data;
+        ptr->command = mutt_str_strdup(command.data);
+        mutt_buffer_reinit(&command);
         mutt_buffer_reinit(&pattern);
         return 0;
       }
