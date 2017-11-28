@@ -114,6 +114,12 @@ const struct HcacheOps *hcache_ops[] = {
   NULL,
 };
 
+static void dump_bytes(struct Buffer *b, const void *src, size_t size)
+{
+  memcpy(b->dptr, src, size);
+  b->dptr += size;
+}
+
 static const struct HcacheOps *hcache_get_backend_ops(const char *backend)
 {
   const struct HcacheOps **ops = hcache_ops;
@@ -132,31 +138,10 @@ static const struct HcacheOps *hcache_get_backend_ops(const char *backend)
 
 #define hcache_get_ops() hcache_get_backend_ops(HeaderCacheBackend)
 
-static void *lazy_malloc(size_t siz)
+static void dump_int(unsigned int i, struct Buffer *buf)
 {
-  if (siz < 4096)
-    siz = 4096;
-
-  return mutt_mem_malloc(siz);
-}
-
-static void lazy_realloc(void *ptr, size_t siz)
-{
-  void **p = (void **) ptr;
-
-  if (p != NULL && siz < 4096)
-    return;
-
-  mutt_mem_realloc(ptr, siz);
-}
-
-static unsigned char *dump_int(unsigned int i, unsigned char *d, int *off)
-{
-  lazy_realloc(&d, *off + sizeof(int));
-  memcpy(d + *off, &i, sizeof(int));
-  (*off) += sizeof(int);
-
-  return d;
+  mutt_buffer_reserve(buf, sizeof(int));
+  dump_bytes(buf, &i, sizeof(int));
 }
 
 static void restore_int(unsigned int *i, const unsigned char *d, int *off)
@@ -165,16 +150,15 @@ static void restore_int(unsigned int *i, const unsigned char *d, int *off)
   (*off) += sizeof(int);
 }
 
-static unsigned char *dump_char_size(char *c, unsigned char *d, int *off,
-                                     ssize_t size, bool convert)
+static void dump_char_size(char *c, struct Buffer *buf, ssize_t size, bool convert)
 {
   char *p = c;
 
   if (!c)
   {
     size = 0;
-    d = dump_int(size, d, off);
-    return d;
+    dump_int(size, buf);
+    return;
   }
 
   if (convert && !mutt_str_is_ascii(c, size))
@@ -187,20 +171,17 @@ static unsigned char *dump_char_size(char *c, unsigned char *d, int *off,
     }
   }
 
-  d = dump_int(size, d, off);
-  lazy_realloc(&d, *off + size);
-  memcpy(d + *off, p, size);
-  *off += size;
+  dump_int(size, buf);
+  mutt_buffer_reserve(buf, size);
+  dump_bytes(buf, p, size);
 
   if (p != c)
     FREE(&p);
-
-  return d;
 }
 
-static unsigned char *dump_char(char *c, unsigned char *d, int *off, bool convert)
+static void dump_char(char *c, struct Buffer *buf, bool convert)
 {
-  return dump_char_size(c, d, off, mutt_str_strlen(c) + 1, convert);
+  dump_char_size(c, buf, mutt_str_strlen(c) + 1, convert);
 }
 
 static void restore_char(char **c, const unsigned char *d, int *off, bool convert)
@@ -231,25 +212,23 @@ static void restore_char(char **c, const unsigned char *d, int *off, bool conver
   *off += size;
 }
 
-static unsigned char *dump_address(struct Address *a, unsigned char *d, int *off, bool convert)
+static void dump_address(struct Address *a, struct Buffer *buf, bool convert)
 {
   unsigned int counter = 0;
-  unsigned int start_off = *off;
+  size_t start_off = buf->dptr - buf->data;
 
-  d = dump_int(0xdeadbeef, d, off);
+  dump_int(0xdeadbeef, buf);
 
   while (a)
   {
-    d = dump_char(a->personal, d, off, convert);
-    d = dump_char(a->mailbox, d, off, false);
-    d = dump_int(a->group, d, off);
+    dump_char(a->personal, buf, convert);
+    dump_char(a->mailbox, buf, false);
+    dump_int(a->group, buf);
     a = a->next;
     counter++;
   }
 
-  memcpy(d + start_off, &counter, sizeof(int));
-
-  return d;
+  memcpy(buf->data + start_off, &counter, sizeof(int));
 }
 
 static void restore_address(struct Address **a, const unsigned char *d, int *off, bool convert)
@@ -271,23 +250,21 @@ static void restore_address(struct Address **a, const unsigned char *d, int *off
   *a = NULL;
 }
 
-static unsigned char *dump_stailq(struct ListHead *l, unsigned char *d, int *off, bool convert)
+static void dump_stailq(struct ListHead *l, struct Buffer *buf, bool convert)
 {
   unsigned int counter = 0;
-  unsigned int start_off = *off;
+  size_t start_off = buf->dptr - buf->data;
 
-  d = dump_int(0xdeadbeef, d, off);
+  dump_int(0xdeadbeef, buf);
 
   struct ListNode *np;
   STAILQ_FOREACH(np, l, entries)
   {
-    d = dump_char(np->data, d, off, convert);
+    dump_char(np->data, buf, convert);
     counter++;
   }
 
-  memcpy(d + start_off, &counter, sizeof(int));
-
-  return d;
+  memcpy(buf->data + start_off, &counter, sizeof(int));
 }
 
 static void restore_stailq(struct ListHead *l, const unsigned char *d, int *off, bool convert)
@@ -305,21 +282,19 @@ static void restore_stailq(struct ListHead *l, const unsigned char *d, int *off,
   }
 }
 
-static unsigned char *dump_buffer(struct Buffer *b, unsigned char *d, int *off, bool convert)
+static void dump_buffer(struct Buffer *b, struct Buffer *buf, bool convert)
 {
   if (!b)
   {
-    d = dump_int(0, d, off);
-    return d;
+    dump_int(0, buf);
+    return;
   }
   else
-    d = dump_int(1, d, off);
+    dump_int(1, buf);
 
-  d = dump_char_size(b->data, d, off, b->dsize + 1, convert);
-  d = dump_int(b->dptr - b->data, d, off);
-  d = dump_int(b->dsize, d, off);
-
-  return d;
+  dump_char_size(b->data, buf, b->dsize + 1, convert);
+  dump_int(b->dptr - b->data, buf);
+  dump_int(b->dsize, buf);
 }
 
 static void restore_buffer(struct Buffer **b, const unsigned char *d, int *off, bool convert)
@@ -341,25 +316,22 @@ static void restore_buffer(struct Buffer **b, const unsigned char *d, int *off, 
   (*b)->dsize = used;
 }
 
-static unsigned char *dump_parameter(struct Parameter *p, unsigned char *d,
-                                     int *off, bool convert)
+static void dump_parameter(struct Parameter *p, struct Buffer *buf, bool convert)
 {
   unsigned int counter = 0;
-  unsigned int start_off = *off;
+  size_t start_off = buf->dptr - buf->data;
 
-  d = dump_int(0xdeadbeef, d, off);
+  dump_int(0xdeadbeef, buf);
 
   while (p)
   {
-    d = dump_char(p->attribute, d, off, false);
-    d = dump_char(p->value, d, off, convert);
+    dump_char(p->attribute, buf, false);
+    dump_char(p->value, buf, convert);
     p = p->next;
     counter++;
   }
 
-  memcpy(d + start_off, &counter, sizeof(int));
-
-  return d;
+  memcpy(buf->data + start_off, &counter, sizeof(int));
 }
 
 static void restore_parameter(struct Parameter **p, const unsigned char *d,
@@ -381,7 +353,7 @@ static void restore_parameter(struct Parameter **p, const unsigned char *d,
   *p = NULL;
 }
 
-static unsigned char *dump_body(struct Body *c, unsigned char *d, int *off, bool convert)
+static void dump_body(struct Body *c, struct Buffer *buf, bool convert)
 {
   struct Body nb;
 
@@ -395,21 +367,16 @@ static unsigned char *dump_body(struct Body *c, unsigned char *d, int *off, bool
   nb.hdr = NULL;
   nb.aptr = NULL;
 
-  lazy_realloc(&d, *off + sizeof(struct Body));
-  memcpy(d + *off, &nb, sizeof(struct Body));
-  *off += sizeof(struct Body);
+  mutt_buffer_reserve(buf, sizeof(struct Body));
+  dump_bytes(buf, &nb, sizeof(struct Body));
 
-  d = dump_char(nb.xtype, d, off, false);
-  d = dump_char(nb.subtype, d, off, false);
-
-  d = dump_parameter(nb.parameter, d, off, convert);
-
-  d = dump_char(nb.description, d, off, convert);
-  d = dump_char(nb.form_name, d, off, convert);
-  d = dump_char(nb.filename, d, off, convert);
-  d = dump_char(nb.d_filename, d, off, convert);
-
-  return d;
+  dump_char(nb.xtype, buf, false);
+  dump_char(nb.subtype, buf, false);
+  dump_parameter(nb.parameter, buf, convert);
+  dump_char(nb.description, buf, convert);
+  dump_char(nb.form_name, buf, convert);
+  dump_char(nb.filename, buf, convert);
+  dump_char(nb.d_filename, buf, convert);
 }
 
 static void restore_body(struct Body *c, const unsigned char *d, int *off, bool convert)
@@ -428,43 +395,41 @@ static void restore_body(struct Body *c, const unsigned char *d, int *off, bool 
   restore_char(&c->d_filename, d, off, convert);
 }
 
-static unsigned char *dump_envelope(struct Envelope *e, unsigned char *d, int *off, bool convert)
+static void dump_envelope(struct Envelope *e, struct Buffer *buf, bool convert)
 {
-  d = dump_address(e->return_path, d, off, convert);
-  d = dump_address(e->from, d, off, convert);
-  d = dump_address(e->to, d, off, convert);
-  d = dump_address(e->cc, d, off, convert);
-  d = dump_address(e->bcc, d, off, convert);
-  d = dump_address(e->sender, d, off, convert);
-  d = dump_address(e->reply_to, d, off, convert);
-  d = dump_address(e->mail_followup_to, d, off, convert);
+  dump_address(e->return_path, buf, convert);
+  dump_address(e->from, buf, convert);
+  dump_address(e->to, buf, convert);
+  dump_address(e->cc, buf, convert);
+  dump_address(e->bcc, buf, convert);
+  dump_address(e->sender, buf, convert);
+  dump_address(e->reply_to, buf, convert);
+  dump_address(e->mail_followup_to, buf, convert);
 
-  d = dump_char(e->list_post, d, off, convert);
-  d = dump_char(e->subject, d, off, convert);
+  dump_char(e->list_post, buf, convert);
+  dump_char(e->subject, buf, convert);
 
   if (e->real_subj)
-    d = dump_int(e->real_subj - e->subject, d, off);
+    dump_int(e->real_subj - e->subject, buf);
   else
-    d = dump_int(-1, d, off);
+    dump_int(-1, buf);
 
-  d = dump_char(e->message_id, d, off, false);
-  d = dump_char(e->supersedes, d, off, false);
-  d = dump_char(e->date, d, off, false);
-  d = dump_char(e->x_label, d, off, convert);
+  dump_char(e->message_id, buf, false);
+  dump_char(e->supersedes, buf, false);
+  dump_char(e->date, buf, false);
+  dump_char(e->x_label, buf, convert);
 
-  d = dump_buffer(e->spam, d, off, convert);
+  dump_buffer(e->spam, buf, convert);
 
-  d = dump_stailq(&e->references, d, off, false);
-  d = dump_stailq(&e->in_reply_to, d, off, false);
-  d = dump_stailq(&e->userhdrs, d, off, convert);
+  dump_stailq(&e->references, buf, false);
+  dump_stailq(&e->in_reply_to, buf, false);
+  dump_stailq(&e->userhdrs, buf, convert);
 
 #ifdef USE_NNTP
-  d = dump_char(e->xref, d, off, false);
-  d = dump_char(e->followup_to, d, off, false);
-  d = dump_char(e->x_comment_to, d, off, convert);
+  dump_char(e->xref, buf, false);
+  dump_char(e->followup_to, buf, false);
+  dump_char(e->x_comment_to, buf, convert);
 #endif
-
-  return d;
 }
 
 static void restore_envelope(struct Envelope *e, const unsigned char *d, int *off, bool convert)
@@ -626,29 +591,28 @@ static const char *hcache_per_folder(const char *path, const char *folder, hcach
  * This function transforms a header into a char so that it is useable by
  * db_store.
  */
-static void *hcache_dump(header_cache_t *h, struct Header *header, int *off,
-                         unsigned int uidvalidity)
+static void hcache_dump(header_cache_t *h, struct Header *header,
+                        struct Buffer *buf, unsigned int uidvalidity)
 {
-  unsigned char *d = NULL;
   struct Header nh;
   bool convert = !Charset_is_utf8;
 
-  *off = 0;
-  d = lazy_malloc(sizeof(union Validate));
+  mutt_buffer_reserve(buf, sizeof(union Validate));
 
   if (uidvalidity == 0)
   {
     struct timeval now;
     gettimeofday(&now, NULL);
-    memcpy(d, &now, sizeof(struct timeval));
+    memcpy(buf->dptr, &now, sizeof(struct timeval));
   }
   else
-    memcpy(d, &uidvalidity, sizeof(uidvalidity));
-  *off += sizeof(union Validate);
+  {
+    memcpy(buf->dptr, &uidvalidity, sizeof(uidvalidity));
+  }
+  buf->dptr += sizeof(union Validate);
 
-  d = dump_int(h->crc, d, off);
+  dump_int(h->crc, buf);
 
-  lazy_realloc(&d, *off + sizeof(struct Header));
   memcpy(&nh, header, sizeof(struct Header));
 
   /* some fields are not safe to cache */
@@ -675,14 +639,12 @@ static void *hcache_dump(header_cache_t *h, struct Header *header, int *off,
   nh.data = NULL;
 #endif
 
-  memcpy(d + *off, &nh, sizeof(struct Header));
-  *off += sizeof(struct Header);
+  mutt_buffer_reserve(buf, sizeof(struct Header));
+  dump_bytes(buf, &nh, sizeof(struct Header));
 
-  d = dump_envelope(nh.env, d, off, convert);
-  d = dump_body(nh.content, d, off, convert);
-  d = dump_char(nh.maildir_flags, d, off, convert);
-
-  return d;
+  dump_envelope(nh.env, buf, convert);
+  dump_body(nh.content, buf, convert);
+  dump_char(nh.maildir_flags, buf, convert);
 }
 
 struct Header *mutt_hcache_restore(const unsigned char *d)
@@ -858,17 +820,17 @@ void mutt_hcache_free(header_cache_t *h, void **data)
 int mutt_hcache_store(header_cache_t *h, const char *key, size_t keylen,
                       struct Header *header, unsigned int uidvalidity)
 {
-  char *data = NULL;
-  int dlen;
+  struct Buffer buf = {0};
   int ret;
 
   if (!h)
     return -1;
 
-  data = hcache_dump(h, header, &dlen, uidvalidity);
-  ret = mutt_hcache_store_raw(h, key, keylen, data, dlen);
+  hcache_dump(h, header, &buf, uidvalidity);
+  size_t dlen = buf.dptr - buf.data;
+  ret = mutt_hcache_store_raw(h, key, keylen, buf.data, dlen);
 
-  FREE(&data);
+  mutt_buffer_reinit(&buf);
 
   return ret;
 }
