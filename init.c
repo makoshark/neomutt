@@ -716,7 +716,6 @@ int mutt_extract_token(struct Buffer *dest, struct Buffer *tok, int flags)
     else
       mutt_buffer_addch(dest, ch);
   }
-  mutt_buffer_addch(dest, '\0'); /* terminate the string */
   SKIPWS(tok->dptr);
   return 0;
 }
@@ -827,9 +826,7 @@ static int parse_ifdef(struct Buffer *tmp, struct Buffer *s, unsigned long data,
                        struct Buffer *err)
 {
   bool res = 0;
-  struct Buffer token;
 
-  memset(&token, 0, sizeof(token));
   mutt_extract_token(tmp, s, 0);
 
   /* is the item defined as a variable? */
@@ -891,6 +888,7 @@ static int parse_ifdef(struct Buffer *tmp, struct Buffer *s, unsigned long data,
   /* ifdef KNOWN_SYMBOL or ifndef UNKNOWN_SYMBOL */
   if ((res && (data == 0)) || (!res && (data == 1)))
   {
+    struct Buffer token = {0};
     int rc = mutt_parse_rc_line(tmp->data, &token, err);
     if (rc == -1)
       mutt_error("Error: %s", err->data);
