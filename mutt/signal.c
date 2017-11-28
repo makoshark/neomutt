@@ -64,7 +64,7 @@ static sig_handler_t exit_handler = mutt_sig_exit_handler;
  * Useful for signals that we can't ignore,
  * or don't want to do anything with.
  */
-void mutt_sig_empty_handler(int sig)
+void mutt_sig_empty_handler(int CONDIT(sig))
 {
 }
 
