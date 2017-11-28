@@ -795,8 +795,8 @@ static void add_to_stailq(struct ListHead *head, const char *str)
  *
  * If the 'finish' command is found, we should stop reading the current file.
  */
-static int finish_source(struct Buffer *tmp, struct Buffer *s,
-                         unsigned long data, struct Buffer *err)
+static int finish_source(struct Buffer *UNUSED(tmp), struct Buffer *s,
+                         unsigned long UNUSED(data), struct Buffer *err)
 {
   if (MoreArgs(s))
   {
@@ -928,7 +928,7 @@ static void remove_from_stailq(struct ListHead *head, const char *str)
 }
 
 static int parse_unignore(struct Buffer *buf, struct Buffer *s,
-                          unsigned long data, struct Buffer *err)
+                          unsigned long UNUSED(data), struct Buffer *UNUSED(err))
 {
   do
   {
@@ -945,7 +945,7 @@ static int parse_unignore(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_ignore(struct Buffer *buf, struct Buffer *s,
-                        unsigned long data, struct Buffer *err)
+                        unsigned long UNUSED(data), struct Buffer *UNUSED(err))
 {
   do
   {
@@ -958,7 +958,7 @@ static int parse_ignore(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_stailq(struct Buffer *buf, struct Buffer *s,
-                        unsigned long data, struct Buffer *err)
+                        unsigned long data, struct Buffer *UNUSED(err))
 {
   do
   {
@@ -970,7 +970,7 @@ static int parse_stailq(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_unstailq(struct Buffer *buf, struct Buffer *s,
-                          unsigned long data, struct Buffer *err)
+                          unsigned long data, struct Buffer *UNUSED(err))
 {
   do
   {
@@ -1030,7 +1030,7 @@ bail:
 }
 
 static int parse_unalternates(struct Buffer *buf, struct Buffer *s,
-                              unsigned long data, struct Buffer *err)
+                              unsigned long UNUSED(data), struct Buffer *err)
 {
   alternates_clean();
   do
@@ -1216,7 +1216,7 @@ static int parse_spam_list(struct Buffer *buf, struct Buffer *s,
 
 #ifdef USE_SIDEBAR
 static int parse_path_list(struct Buffer *buf, struct Buffer *s,
-                           unsigned long data, struct Buffer *err)
+                           unsigned long data, struct Buffer *UNUSED(err))
 {
   char path[_POSIX_PATH_MAX];
 
@@ -1232,7 +1232,7 @@ static int parse_path_list(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_path_unlist(struct Buffer *buf, struct Buffer *s,
-                             unsigned long data, struct Buffer *err)
+                             unsigned long data, struct Buffer *UNUSED(err))
 {
   char path[_POSIX_PATH_MAX];
 
@@ -1453,7 +1453,7 @@ static int parse_attach_list(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_unattach_list(struct Buffer *buf, struct Buffer *s,
-                               struct ListHead *head, struct Buffer *err)
+                               struct ListHead *head, struct Buffer *UNUSED(err))
 {
   struct AttachMatch *a = NULL;
   char *tmp = NULL;
@@ -1522,7 +1522,7 @@ static int print_attach_list(struct ListHead *h, char op, char *name)
 }
 
 static int parse_attachments(struct Buffer *buf, struct Buffer *s,
-                             unsigned long data, struct Buffer *err)
+                             unsigned long UNUSED(data), struct Buffer *err)
 {
   char op, *category = NULL;
   struct ListHead *head = NULL;
@@ -1579,7 +1579,7 @@ static int parse_attachments(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_unattachments(struct Buffer *buf, struct Buffer *s,
-                               unsigned long data, struct Buffer *err)
+                               unsigned long UNUSED(data), struct Buffer *err)
 {
   char op, *p = NULL;
   struct ListHead *head = NULL;
@@ -1622,7 +1622,7 @@ static int parse_unattachments(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_unlists(struct Buffer *buf, struct Buffer *s,
-                         unsigned long data, struct Buffer *err)
+                         unsigned long UNUSED(data), struct Buffer *err)
 {
   do
   {
@@ -1672,7 +1672,7 @@ bail:
 }
 
 static int parse_unsubscribe(struct Buffer *buf, struct Buffer *s,
-                             unsigned long data, struct Buffer *err)
+                             unsigned long UNUSED(data), struct Buffer *err)
 {
   do
   {
@@ -1690,7 +1690,7 @@ static int parse_unsubscribe(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_unalias(struct Buffer *buf, struct Buffer *s,
-                         unsigned long data, struct Buffer *err)
+                         unsigned long UNUSED(data), struct Buffer *UNUSED(err))
 {
   struct Alias *tmp = NULL, *last = NULL;
 
@@ -1823,7 +1823,7 @@ bail:
 }
 
 static int parse_unmy_hdr(struct Buffer *buf, struct Buffer *s,
-                          unsigned long data, struct Buffer *err)
+                          unsigned long UNUSED(data), struct Buffer *UNUSED(err))
 {
   struct ListNode *np, *tmp;
   size_t l;
@@ -1855,7 +1855,7 @@ static int parse_unmy_hdr(struct Buffer *buf, struct Buffer *s,
 }
 
 static int parse_my_hdr(struct Buffer *buf, struct Buffer *s,
-                        unsigned long data, struct Buffer *err)
+                        unsigned long UNUSED(data), struct Buffer *err)
 {
   struct ListNode *n = NULL;
   size_t keylen;
@@ -3106,7 +3106,7 @@ static int source_rc(const char *rcfile_path, struct Buffer *err)
 #undef MAXERRS
 
 static int parse_source(struct Buffer *tmp, struct Buffer *token,
-                        unsigned long data, struct Buffer *err)
+                        unsigned long UNUSED(data), struct Buffer *err)
 {
   char path[_POSIX_PATH_MAX];
 
@@ -4245,7 +4245,8 @@ int mutt_get_hook_type(const char *name)
 }
 
 static int parse_group_context(struct GroupContext **ctx, struct Buffer *buf,
-                               struct Buffer *s, unsigned long data, struct Buffer *err)
+                               struct Buffer *s, unsigned long UNUSED(data),
+                               struct Buffer *err)
 {
   while (mutt_str_strcasecmp(buf->data, "-group") == 0)
   {
@@ -4276,7 +4277,7 @@ bail:
 }
 
 static int parse_tag_transforms(struct Buffer *b, struct Buffer *s,
-                                unsigned long data, struct Buffer *err)
+                                unsigned long UNUSED(data), struct Buffer *UNUSED(err))
 {
   if (!b || !s)
     return -1;
@@ -4312,7 +4313,7 @@ static int parse_tag_transforms(struct Buffer *b, struct Buffer *s,
 }
 
 static int parse_tag_formats(struct Buffer *b, struct Buffer *s,
-                             unsigned long data, struct Buffer *err)
+                             unsigned long UNUSED(data), struct Buffer *UNUSED(err))
 {
   if (!b || !s)
     return -1;
@@ -4362,7 +4363,7 @@ static int parse_tag_formats(struct Buffer *b, struct Buffer *s,
  * Use it as follows: subscribe-to =folder
  */
 static int parse_subscribe_to(struct Buffer *b, struct Buffer *s,
-                              unsigned long data, struct Buffer *err)
+                              unsigned long UNUSED(data), struct Buffer *err)
 {
   if (!b || !s || !err)
     return -1;
@@ -4418,7 +4419,7 @@ static int parse_subscribe_to(struct Buffer *b, struct Buffer *s,
  * Use it as follows: unsubscribe-from =folder
  */
 static int parse_unsubscribe_from(struct Buffer *b, struct Buffer *s,
-                                  unsigned long data, struct Buffer *err)
+                                  unsigned long UNUSED(data), struct Buffer *err)
 {
   if (!b || !s || !err)
     return -1;

@@ -2267,7 +2267,7 @@ static char *gen_msgid(void)
   return (mutt_str_strdup(buf));
 }
 
-static void alarm_handler(int sig)
+static void alarm_handler(int UNUSED(sig))
 {
   SigAlrm = 1;
 }
