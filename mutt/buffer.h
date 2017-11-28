@@ -51,7 +51,6 @@ size_t mutt_buffer_addstr(struct Buffer *buf, const char *s);
 void mutt_buffer_from(struct Buffer *buf, char *seed);
 int  mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...);
 void mutt_buffer_reserve(struct Buffer *buf, size_t len);
-void mutt_buffer_reset(struct Buffer *buf);
 void mutt_buffer_rewind(struct Buffer *buf);
 void mutt_buffer_seek(struct Buffer *buf, size_t off);
 

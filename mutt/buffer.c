@@ -38,7 +38,6 @@
  * | mutt_buffer_printf()   | Format a string into a Buffer
  * | mutt_buffer_reinit()   | Release all memory and reinitialize a Buffer
  * | mutt_buffer_reserve()  | Make sure we can append len bytes without reallocation
- * | mutt_buffer_reset()    | Reset an existing Buffer
  * | mutt_buffer_rewind()   | Rewind the read/write position of the Buffer
  * | mutt_buffer_seek()     | Set the read/write position to a specific offset
  */
@@ -115,22 +114,6 @@ void mutt_buffer_reinit(struct Buffer *buf)
   if (buf->data != buf->sso)
     FREE(&buf->data);
   mutt_buffer_init(buf);
-}
-
-/**
- * mutt_buffer_reset - Reset an existing Buffer
- * @param b Buffer to reset
- *
- * This can be called on a Buffer to reset the pointers,
- * effectively emptying it.
- */
-void mutt_buffer_reset(struct Buffer *buf)
-{
-  if (!buf)
-    return;
-
-  memset(buf->data, 0, buf->dsize);
-  mutt_buffer_rewind(buf);
 }
 
 /**
