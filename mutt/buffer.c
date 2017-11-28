@@ -33,7 +33,6 @@
  * | mutt_buffer_addstr()   | Add a string to a Buffer
  * | mutt_buffer_alloc()    | Create a new Buffer
  * | mutt_buffer_from()     | Initialize a Buffer from an existing string
- * | mutt_buffer_init()     | Initialise a new Buffer
  * | mutt_buffer_is_empty() | Is the Buffer empty?
  * | mutt_buffer_printf()   | Format a string into a Buffer
  * | mutt_buffer_reinit()   | Release all memory and reinitialize a Buffer
@@ -89,20 +88,6 @@ void mutt_buffer_reserve(struct Buffer *buf, size_t len)
 }
 
 /**
- * mutt_buffer_init - Initialise a new Buffer
- * @param b Buffer to initialise
- *
- * This must not be called on a Buffer that already contains data.
- */
-void mutt_buffer_init(struct Buffer *buf)
-{
-  if (!buf)
-    return;
-
-  memset(buf, 0, sizeof(struct Buffer));
-}
-
-/**
  * mutt_buffer_reinit - Release all memory and reinitialize a Buffer
  * @param b Buffer to release and reinitialize
  */
@@ -113,7 +98,8 @@ void mutt_buffer_reinit(struct Buffer *buf)
 
   if (buf->data != buf->sso)
     FREE(&buf->data);
-  mutt_buffer_init(buf);
+
+  memset(buf, 0, sizeof(struct Buffer));
 }
 
 /**
@@ -126,7 +112,7 @@ void mutt_buffer_from(struct Buffer *buf, char *seed)
   if (!buf || !seed)
     return;
 
-  mutt_buffer_init(buf);
+  memset(buf, 0, sizeof(struct Buffer));
   mutt_buffer_add(buf, seed, mutt_str_strlen(seed));
 }
 
