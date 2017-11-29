@@ -716,7 +716,13 @@ int mutt_extract_token(struct Buffer *dest, struct Buffer *tok, int flags)
     else
       mutt_buffer_addch(dest, ch);
   }
+
   SKIPWS(tok->dptr);
+
+  /* Terminate the string. This is needed if no token could be extracted, in
+   * which case dest must be the empty string. */
+  mutt_buffer_addch(dest, 0);
+
   return 0;
 }
 
