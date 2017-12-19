@@ -45,7 +45,7 @@
 #include "state.h"
 #include "tags.h"
 #ifdef USE_NOTMUCH
-#include "mutt_notmuch.h"
+#include "notmuch/mutt_notmuch.h"
 #endif
 
 static int address_header_decode(char **str);

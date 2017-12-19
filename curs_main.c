@@ -66,16 +66,16 @@
 #include "sidebar.h"
 #endif
 #ifdef USE_POP
-#include "pop.h"
+#include "pop/pop.h"
 #endif
 #ifdef USE_IMAP
 #include "imap/imap.h"
 #endif
 #ifdef USE_NOTMUCH
-#include "mutt_notmuch.h"
+#include "notmuch/mutt_notmuch.h"
 #endif
 #ifdef USE_NNTP
-#include "nntp.h"
+#include "nntp/nntp.h"
 #endif
 
 static const char *No_mailbox_is_open = N_("No mailbox is open.");

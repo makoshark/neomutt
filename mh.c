@@ -60,7 +60,7 @@
 #include "sort.h"
 #include "thread.h"
 #ifdef USE_NOTMUCH
-#include "mutt_notmuch.h"
+#include "notmuch/mutt_notmuch.h"
 #endif
 #ifdef USE_HCACHE
 #include "hcache/hcache.h"

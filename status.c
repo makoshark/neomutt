@@ -34,7 +34,7 @@
 #include "protos.h"
 #include "sort.h"
 #ifdef USE_NOTMUCH
-#include "mutt_notmuch.h"
+#include "notmuch/mutt_notmuch.h"
 #endif
 
 static char *get_sort_str(char *buf, size_t buflen, int method)

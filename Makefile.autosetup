@@ -63,8 +63,8 @@ NEOMUTTOBJS=	mutt_account.o addrbook.o alias.o attach.o bcache.o body.o \
 		header.o help.o history.o hook.o init.o keymap.o main.o \
 		mbox.o mbyte.o menu.o mh.o muttlib.o mutt_address.o \
 		mutt_socket.o tags.o mx.o \
-		newsrc.o nntp.o pager.o parameter.o parse.o pattern.o pop.o \
-		pop_auth.o pop_lib.o postpone.o query.o recvattach.o recvcmd.o \
+		pager.o parameter.o parse.o pattern.o \
+		postpone.o query.o recvattach.o recvcmd.o \
 		rfc1524.o rfc2047.o rfc2231.o rfc3676.o address.o \
 		safe_asprintf.o score.o send.o sendlib.o sidebar.o mutt_signal.o \
 		smtp.o sort.o state.o status.o system.o thread.o url.o \
@@ -77,9 +77,6 @@ NEOMUTTOBJS+=	wcscasecmp.o
 @if HAVE_RESIZETERM
 NEOMUTTOBJS+=	resize.o
 @endif
-@if USE_NOTMUCH
-NEOMUTTOBJS+=	mutt_notmuch.o
-@endif
 @if MIXMASTER
 NEOMUTTOBJS+=	remailer.o
 @endif
@@ -88,6 +85,22 @@ NEOMUTTOBJS+=	mutt_lua.o
 @endif
 CLEANFILES+=	$(NEOMUTT) $(NEOMUTTOBJS)
 ALLOBJS+=	$(NEOMUTTOBJS)
+
+###############################################################################
+# libpop
+LIBPOP=	libpop.a
+LIBPOPOBJS=	pop/pop.o pop/pop_auth.o pop/pop_lib.o
+CLEANFILES+=	$(LIBPOP) $(LIBPOPOBJS)
+MUTTLIBS+=	$(LIBPOP)
+ALLOBJS+=	$(LIBPOPOBJS)
+
+###############################################################################
+# libnntp
+LIBNNTP=	libnntp.a
+LIBNNTPOBJS=	nntp/newsrc.o nntp/nntp.o
+CLEANFILES+=	$(LIBNNTP) $(LIBNNTPOBJS)
+MUTTLIBS+=	$(LIBNNTP)
+ALLOBJS+=	$(LIBNNTPOBJS)
 
 ###############################################################################
 # libmutt
@@ -183,6 +196,16 @@ LIBHCACHEOBJS+=	hcache/tc.o
 @endif
 
 ###############################################################################
+# libnotmuch
+@if USE_NOTMUCH
+LIBNOTMUCH=	libnotmuch.a
+LIBNOTMUCHOBJS=	notmuch/mutt_notmuch.o
+CLEANFILES+=	$(LIBNOTMUCH) $(LIBNOTMUCHOBJS)
+MUTTLIBS+=	$(LIBNOTMUCH)
+ALLOBJS+=	$(LIBNOTMUCHOBJS)
+@endif
+
+###############################################################################
 # pgpewrap
 PGPEWRAP=	pgpewrap$(EXEEXT)
 PGPEWRAPOBJS=	pgpewrap.o
@@ -224,6 +247,20 @@ $(LIBMUTT): $(PWD)/mutt $(LIBMUTTOBJS)
 $(PWD)/mutt:
 	$(MKDIR_P) $(PWD)/mutt
 
+# libpop
+$(LIBPOP): $(PWD)/pop $(LIBPOPOBJS)
+	$(AR) cr $@ $(LIBPOPOBJS)
+	$(RANLIB) $@
+$(PWD)/pop:
+	$(MKDIR_P) $(PWD)/pop
+
+# libnntp
+$(LIBNNTP): $(PWD)/nntp $(LIBNNTPOBJS)
+	$(AR) cr $@ $(LIBNNTPOBJS)
+	$(RANLIB) $@
+$(PWD)/nntp:
+	$(MKDIR_P) $(PWD)/nntp
+
 # libncrypt
 $(LIBNCRYPT): $(PWD)/ncrypt $(LIBNCRYPTOBJS)
 	$(AR) cr $@ $(LIBNCRYPTOBJS)
@@ -252,6 +289,13 @@ $(LIBHCACHE): $(PWD)/hcache $(LIBHCACHEOBJS)
 	$(RANLIB) $@
 $(PWD)/hcache:
 	$(MKDIR_P) $(PWD)/hcache
+
+# libnotmuch
+$(LIBNOTMUCH): $(PWD)/notmuch $(LIBNOTMUCHOBJS)
+	$(AR) cr $@ $(LIBNOTMUCHOBJS)
+	$(RANLIB) $@
+$(PWD)/notmuch:
+	$(MKDIR_P) $(PWD)/notmuch
 
 # pgpewrap
 $(PGPEWRAP): $(PGPEWRAPOBJS)

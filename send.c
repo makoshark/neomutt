@@ -57,13 +57,13 @@
 #include "url.h"
 #ifdef USE_NNTP
 #include "mx.h"
-#include "nntp.h"
+#include "nntp/nntp.h"
 #endif
 #ifdef MIXMASTER
 #include "remailer.h"
 #endif
 #ifdef USE_NOTMUCH
-#include "mutt_notmuch.h"
+#include "notmuch/mutt_notmuch.h"
 #endif
 
 static void append_signature(FILE *f)

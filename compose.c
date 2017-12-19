@@ -60,7 +60,7 @@
 #include "remailer.h"
 #endif
 #ifdef USE_NNTP
-#include "nntp.h"
+#include "nntp/nntp.h"
 #endif
 
 struct Address;

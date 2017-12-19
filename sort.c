@@ -37,7 +37,7 @@
 #include "thread.h"
 #ifdef USE_NNTP
 #include "mx.h"
-#include "nntp.h"
+#include "nntp/nntp.h"
 #endif
 
 #define SORTCODE(x) (Sort & SORT_REVERSE) ? -(x) : x
