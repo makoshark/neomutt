@@ -42,9 +42,9 @@ struct Option
   cs_validator validator; /**< validator callback function */
 };
 
-int mutt_option_to_string(const struct Option *opt, char *val, size_t len);
+int mutt_option_to_string(const struct ConfigDef *opt, char *val, size_t len);
 
-bool mutt_option_get(const char *s, struct Option *opt);
-int mutt_option_set(const struct Option *val, struct Buffer *err);
+bool mutt_option_get(const char *s, struct ConfigDef *opt);
+int mutt_option_set(const struct ConfigDef *val, struct Buffer *err);
 
 #endif /* _MUTT_OPTIONS_H */

@@ -119,7 +119,7 @@ static int lua_mutt_set(lua_State *l)
   int rc = -1;
   const char *param = lua_tostring(l, -2);
   mutt_debug(2, " * lua_mutt_set(%s)\n", param);
-  struct Option opt;
+  struct ConfigDef opt;
   char err_str[LONG_STRING];
   struct Buffer err;
   err.data = err_str;
@@ -140,14 +140,14 @@ static int lua_mutt_set(lua_State *l)
     case DT_PATH:
     case DT_SORT:
     case DT_STRING:
-      opt.var = (long) mutt_str_strdup(lua_tostring(l, -1));
+      *(char **) opt.var = mutt_str_strdup(lua_tostring(l, -1));
       rc = mutt_option_set(&opt, &err);
       FREE(&opt.var);
       break;
     case DT_QUAD:
-      opt.var = (long) lua_tointeger(l, -1);
-      if ((opt.var != MUTT_YES) && (opt.var != MUTT_NO) &&
-          (opt.var != MUTT_ASKYES) && (opt.var != MUTT_ASKNO))
+      *(int *) opt.var = lua_tointeger(l, -1);
+      if ((*(int *) opt.var != MUTT_YES) && (*(int *) opt.var != MUTT_NO) &&
+          (*(int *) opt.var != MUTT_ASKYES) && (*(int *) opt.var != MUTT_ASKNO))
       {
         luaL_error(l, "Invalid opt for quad option %s (one of "
                       "mutt.QUAD_YES, mutt.QUAD_NO, mutt.QUAD_ASKYES, "
@@ -170,7 +170,7 @@ static int lua_mutt_set(lua_State *l)
       lua_Integer i = lua_tointeger(l, -1);
       if ((i > SHRT_MIN) && (i < SHRT_MAX))
       {
-        opt.var = lua_tointeger(l, -1);
+        *(int *) opt.var = lua_tointeger(l, -1);
         rc = mutt_option_set(&opt, &err);
       }
       else
@@ -181,7 +181,7 @@ static int lua_mutt_set(lua_State *l)
       break;
     }
     case DT_BOOL:
-      opt.var = (long) lua_toboolean(l, -1);
+      *(int *) opt.var = (long) lua_toboolean(l, -1);
       rc = mutt_option_set(&opt, &err);
       break;
     default:
@@ -197,7 +197,7 @@ static int lua_mutt_get(lua_State *l)
 {
   const char *param = lua_tostring(l, -1);
   mutt_debug(2, " * lua_mutt_get(%s)\n", param);
-  struct Option opt;
+  struct ConfigDef opt;
 
   if (mutt_option_get(param, &opt))
   {
@@ -233,7 +233,7 @@ static int lua_mutt_get(lua_State *l)
         }
         return 1;
       case DT_QUAD:
-        lua_pushinteger(l, opt.var);
+        lua_pushinteger(l, *(int *) opt.var);
         return 1;
       case DT_REGEX:
       case DT_MAGIC:
@@ -252,7 +252,7 @@ static int lua_mutt_get(lua_State *l)
         lua_pushinteger(l, (signed short) *((unsigned long *) opt.var));
         return 1;
       case DT_BOOL:
-        lua_pushboolean(l, opt.var);
+        lua_pushboolean(l, *(int *) opt.var);
         return 1;
       default:
         luaL_error(l, "NeoMutt parameter type %d unknown for %s", opt.type, param);
