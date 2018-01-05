@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: neomutt-20171215\n"
 "Report-Msgid-Bugs-To: neomutt-devel@neomutt.org\n"
-"POT-Creation-Date: 2018-01-04 20:51+0000\n"
+"POT-Creation-Date: 2018-01-05 00:57+0000\n"
 "PO-Revision-Date: 2005-02-01 00:01GMT+2\n"
 "Last-Translator: Dokianakis Fanis <madf@hellug.gr>\n"
 "Language-Team: Greek <EL@li.org>\n"
@@ -838,7 +838,7 @@ msgstr "Προειδοποίηση: '%s' είναι λανθασμένη διε�
 msgid "You may not delete the only attachment."
 msgstr "Δεν μπορείτε να διαγράψετε τη μοναδική προσάρτηση."
 
-#: compose.c:983 send.c:1902
+#: compose.c:983 send.c:1914
 #, c-format
 msgid "Bad IDN in \"%s\": '%s'"
 msgstr "Λανθασμένη διεθνής διεύθυνση IDN στο \"%s\": '%s'"
@@ -953,11 +953,19 @@ msgstr "Εγγραφή μηνύματος στο %s ..."
 msgid "Message written."
 msgstr "Το μήνυμα γράφτηκε."
 
-#: compose.c:1612
+#: compose.c:1609
+msgid "No PGP backend configured"
+msgstr ""
+
+#: compose.c:1617
 msgid "S/MIME already selected. Clear and continue ? "
 msgstr "Το S/MIME είχε ήδη επιλεγεί. Καθαρισμός ή συνέχεια ; "
 
-#: compose.c:1641
+#: compose.c:1643
+msgid "No S/MIME backend configured"
+msgstr ""
+
+#: compose.c:1651
 msgid "PGP already selected. Clear and continue ? "
 msgstr "Το PGP είχε ήδη επιλεγεί. Καθαρισμός ή συνέχεια ; "
 
@@ -3440,7 +3448,7 @@ msgstr ""
 "Το μήνυμα δεν μπορεί να σταλεί ως εσωτερικό κείμενο. Να χρησιμοποιηθεί PGP/"
 "MIME;"
 
-#: ncrypt/crypt.c:189 send.c:1812
+#: ncrypt/crypt.c:189 send.c:1824
 msgid "Mail not sent."
 msgstr "Το γράμμα δεν εστάλη."
 
@@ -6293,67 +6301,71 @@ msgstr "Ματαίωση αποστολής μη τροποποιημένου μ
 msgid "Aborted unmodified message."
 msgstr "Ματαίωση αποστολής μη τροποποιημένου μηνύματος."
 
-#: send.c:1809
+#: send.c:1781
+msgid "No crypto backend configured.  Disabling message security setting."
+msgstr ""
+
+#: send.c:1821
 #, fuzzy
 msgid "Article not posted."
 msgstr "Το γράμμα δεν εστάλη."
 
-#: send.c:1876
+#: send.c:1888
 msgid "Message postponed."
 msgstr "Το μήνυμα ανεβλήθη."
 
-#: send.c:1890
+#: send.c:1902
 msgid "No recipients are specified!"
 msgstr "Δεν έχουν καθοριστεί παραλήπτες!"
 
-#: send.c:1895
+#: send.c:1907
 msgid "No recipients were specified."
 msgstr "Δεν καθορίστηκαν παραλήπτες."
 
-#: send.c:1911
+#: send.c:1923
 msgid "No subject, abort sending?"
 msgstr "Δεν υπάρχει θέμα, ακύρωση αποστολής;"
 
-#: send.c:1915 send.c:1921
+#: send.c:1927 send.c:1933
 msgid "No subject specified."
 msgstr "Δεν καθορίστηκε θέμα."
 
-#: send.c:1927
+#: send.c:1939
 #, fuzzy
 msgid "No newsgroup specified."
 msgstr "Δεν καθορίστηκε θέμα."
 
-#: send.c:1934
+#: send.c:1946
 #, fuzzy
 msgid "No attachments, cancel sending?"
 msgstr "επεξεργασία της κωδικοποίησης-μεταφοράς της προσάρτησης"
 
-#: send.c:1940
+#: send.c:1952
 msgid "Message contains text matching \"$attach_keyword\". Not sending."
 msgstr ""
 
-#: send.c:2001 smtp.c:191
+#: send.c:2013 smtp.c:191
 msgid "Sending message..."
 msgstr "Αποστολή μηνύματος..."
 
-#: send.c:2033
+#: send.c:2045
 #, fuzzy
 msgid "Save attachments in Fcc?"
 msgstr "παρουσίαση της προσάρτησης ως κείμενο"
 
-#: send.c:2140
+#: send.c:2152
 msgid "Could not send the message."
 msgstr "Αδυναμία αποστολής του μηνύματος."
 
-#: send.c:2146
+#: send.c:2158
 msgid "Sending in background."
 msgstr "Αποστολή στο παρασκήνιο."
 
-#: send.c:2147
+#: send.c:2159
 msgid "Article posted."
 msgstr ""
 
-#: send.c:2148
+#: send.c:2160
 msgid "Mail sent."
 msgstr "Το γράμμα εστάλη."
 
@@ -6478,11 +6490,11 @@ msgid ""
 "Copyright (C) 1996-2002 Brandon Long <blong@fiction.net>\n"
 "Copyright (C) 1997-2009 Thomas Roessler <roessler@does-not-exist.org>\n"
 "Copyright (C) 1998-2005 Werner Koch <wk@isil.d.shuttle.de>\n"
-"Copyright (C) 1999-2014 Brendan Cully <brendan@kublai.com>\n"
+"Copyright (C) 1999-2017 Brendan Cully <brendan@kublai.com>\n"
 "Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\n"
 "Copyright (C) 2000-2004 Edmund Grimley Evans <edmundo@rano.org>\n"
 "Copyright (C) 2006-2009 Rocco Rutte <pdmef@gmx.net>\n"
-"Copyright (C) 2014-2016 Kevin J. McCarthy <kevin@8t8.us>\n"
+"Copyright (C) 2014-2017 Kevin J. McCarthy <kevin@8t8.us>\n"
 "Copyright (C) 2015-2017 Richard Russon <rich@flatcap.org>\n"
 "\n"
 "Many others not mentioned here contributed code, fixes,\n"

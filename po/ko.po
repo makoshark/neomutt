@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: neomutt-20171215\n"
 "Report-Msgid-Bugs-To: neomutt-devel@neomutt.org\n"
-"POT-Creation-Date: 2018-01-04 20:51+0000\n"
+"POT-Creation-Date: 2018-01-05 00:57+0000\n"
 "PO-Revision-Date: 2004-03-03 10:25+900\n"
 "Last-Translator: Im Eunjea <eunjea@kldp.org>\n"
 "Language-Team: Im Eunjea <eunjea@kldp.org>\n"
@@ -832,7 +832,7 @@ msgstr "경고: '%s' 잘못된 IDN."
 msgid "You may not delete the only attachment."
 msgstr "첨부물만을 삭제할 수는 없습니다."
 
-#: compose.c:983 send.c:1902
+#: compose.c:983 send.c:1914
 #, c-format
 msgid "Bad IDN in \"%s\": '%s'"
 msgstr "잘못된 IDN \"%s\": '%s'"
@@ -947,11 +947,19 @@ msgstr "%s에 메일 쓰는중..."
 msgid "Message written."
 msgstr "메일 쓰기 완료."
 
-#: compose.c:1612
+#: compose.c:1609
+msgid "No PGP backend configured"
+msgstr ""
+
+#: compose.c:1617
 msgid "S/MIME already selected. Clear and continue ? "
 msgstr "이미 S/MIME이 선택됨. 지우고 계속할까요? "
 
-#: compose.c:1641
+#: compose.c:1643
+msgid "No S/MIME backend configured"
+msgstr ""
+
+#: compose.c:1651
 msgid "PGP already selected. Clear and continue ? "
 msgstr "PGP가 선택됨. 지우고 계속할까요? "
 
@@ -3399,7 +3407,7 @@ msgstr "PGP를 구동합니다..."
 msgid "Message can't be sent inline.  Revert to using PGP/MIME?"
 msgstr ""
 
-#: ncrypt/crypt.c:189 send.c:1812
+#: ncrypt/crypt.c:189 send.c:1824
 msgid "Mail not sent."
 msgstr "보내지 않음."
 
@@ -6245,67 +6253,71 @@ msgstr "변경되지 않은 메일을 취소할까요?"
 msgid "Aborted unmodified message."
 msgstr "변경되지 않은 메일 취소함."
 
-#: send.c:1809
+#: send.c:1781
+msgid "No crypto backend configured.  Disabling message security setting."
+msgstr ""
+
+#: send.c:1821
 #, fuzzy
 msgid "Article not posted."
 msgstr "보내지 않음."
 
-#: send.c:1876
+#: send.c:1888
 msgid "Message postponed."
 msgstr "발송 연기됨."
 
-#: send.c:1890
+#: send.c:1902
 msgid "No recipients are specified!"
 msgstr "수신자가 지정되지 않음!"
 
-#: send.c:1895
+#: send.c:1907
 msgid "No recipients were specified."
 msgstr "수신자가 지정되지 않음."
 
-#: send.c:1911
+#: send.c:1923
 msgid "No subject, abort sending?"
 msgstr "제목 없음, 보내기를 취소할까요?"
 
-#: send.c:1915 send.c:1921
+#: send.c:1927 send.c:1933
 msgid "No subject specified."
 msgstr "제목이 지정되지 않음."
 
-#: send.c:1927
+#: send.c:1939
 #, fuzzy
 msgid "No newsgroup specified."
 msgstr "제목이 지정되지 않음."
 
-#: send.c:1934
+#: send.c:1946
 #, fuzzy
 msgid "No attachments, cancel sending?"
 msgstr "첨부물 전송 부호화 방법 편집"
 
-#: send.c:1940
+#: send.c:1952
 msgid "Message contains text matching \"$attach_keyword\". Not sending."
 msgstr ""
 
-#: send.c:2001 smtp.c:191
+#: send.c:2013 smtp.c:191
 msgid "Sending message..."
 msgstr "메일 보내는 중..."
 
-#: send.c:2033
+#: send.c:2045
 #, fuzzy
 msgid "Save attachments in Fcc?"
 msgstr "첨부물을 text로 보기"
 
-#: send.c:2140
+#: send.c:2152
 msgid "Could not send the message."
 msgstr "메일을 보낼 수 없음."
 
-#: send.c:2146
+#: send.c:2158
 msgid "Sending in background."
 msgstr "백그라운드로 보냄."
 
-#: send.c:2147
+#: send.c:2159
 msgid "Article posted."
 msgstr ""
 
-#: send.c:2148
+#: send.c:2160
 msgid "Mail sent."
 msgstr "메일 보냄."
 
@@ -6427,11 +6439,11 @@ msgid ""
 "Copyright (C) 1996-2002 Brandon Long <blong@fiction.net>\n"
 "Copyright (C) 1997-2009 Thomas Roessler <roessler@does-not-exist.org>\n"
 "Copyright (C) 1998-2005 Werner Koch <wk@isil.d.shuttle.de>\n"
-"Copyright (C) 1999-2014 Brendan Cully <brendan@kublai.com>\n"
+"Copyright (C) 1999-2017 Brendan Cully <brendan@kublai.com>\n"
 "Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\n"
 "Copyright (C) 2000-2004 Edmund Grimley Evans <edmundo@rano.org>\n"
 "Copyright (C) 2006-2009 Rocco Rutte <pdmef@gmx.net>\n"
-"Copyright (C) 2014-2016 Kevin J. McCarthy <kevin@8t8.us>\n"
+"Copyright (C) 2014-2017 Kevin J. McCarthy <kevin@8t8.us>\n"
 "Copyright (C) 2015-2017 Richard Russon <rich@flatcap.org>\n"
 "\n"
 "Many others not mentioned here contributed code, fixes,\n"

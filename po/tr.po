@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: neomutt-20171215\n"
 "Report-Msgid-Bugs-To: neomutt-devel@neomutt.org\n"
-"POT-Creation-Date: 2018-01-04 20:51+0000\n"
+"POT-Creation-Date: 2018-01-05 00:57+0000\n"
 "PO-Revision-Date: 2006-01-11 04:13+0200\n"
 "Last-Translator: Recai Oktaş <roktas@debian.org>\n"
 "Language-Team: Debian L10n Turkish <debian-l10n-turkish@lists.debian.org>\n"
@@ -832,7 +832,7 @@ msgstr "Uyarı: '%s' hatalı bir IDN."
 msgid "You may not delete the only attachment."
 msgstr "Tek kalmış bir eki silemezsiniz."
 
-#: compose.c:983 send.c:1902
+#: compose.c:983 send.c:1914
 #, c-format
 msgid "Bad IDN in \"%s\": '%s'"
 msgstr "\"%s\" hatalı IDN'e sahip: '%s'"
@@ -947,11 +947,19 @@ msgstr "İleti %s eposta kutusuna kaydediliyor..."
 msgid "Message written."
 msgstr "İleti kaydedildi."
 
-#: compose.c:1612
+#: compose.c:1609
+msgid "No PGP backend configured"
+msgstr ""
+
+#: compose.c:1617
 msgid "S/MIME already selected. Clear and continue ? "
 msgstr "S/MIME zaten seçili durumda. Önceki iptâl edilerek devam edilsin mi?"
 
-#: compose.c:1641
+#: compose.c:1643
+msgid "No S/MIME backend configured"
+msgstr ""
+
+#: compose.c:1651
 msgid "PGP already selected. Clear and continue ? "
 msgstr "PGP zaten seçili durumda. Önceki iptâl edilerek devam edilsin mi?"
 
@@ -3341,7 +3349,7 @@ msgid "Message can't be sent inline.  Revert to using PGP/MIME?"
 msgstr ""
 "İleti satıriçi olarak gönderilemiyor.  PGP/MIME kullanımına geri dönülsün mü?"
 
-#: ncrypt/crypt.c:189 send.c:1812
+#: ncrypt/crypt.c:189 send.c:1824
 msgid "Mail not sent."
 msgstr "Eposta gönderilmedi."
 
@@ -6187,67 +6195,71 @@ msgstr "Değiştirilmemiş ileti iptal edilsin mi?"
 msgid "Aborted unmodified message."
 msgstr "Değiştirilmemiş ileti iptal edildi."
 
-#: send.c:1809
+#: send.c:1781
+msgid "No crypto backend configured.  Disabling message security setting."
+msgstr ""
+
+#: send.c:1821
 #, fuzzy
 msgid "Article not posted."
 msgstr "Eposta gönderilmedi."
 
-#: send.c:1876
+#: send.c:1888
 msgid "Message postponed."
 msgstr "İleti ertelendi."
 
-#: send.c:1890
+#: send.c:1902
 msgid "No recipients are specified!"
 msgstr "Alıcı belirtilmedi!"
 
-#: send.c:1895
+#: send.c:1907
 msgid "No recipients were specified."
 msgstr "Alıcılar belirtilmedi!"
 
-#: send.c:1911
+#: send.c:1923
 msgid "No subject, abort sending?"
 msgstr "Konu girilmedi, gönderme iptal edilsin mi?"
 
-#: send.c:1915 send.c:1921
+#: send.c:1927 send.c:1933
 msgid "No subject specified."
 msgstr "Konu girilmedi."
 
-#: send.c:1927
+#: send.c:1939
 #, fuzzy
 msgid "No newsgroup specified."
 msgstr "Konu girilmedi."
 
-#: send.c:1934
+#: send.c:1946
 #, fuzzy
 msgid "No attachments, cancel sending?"
 msgstr "ek iletim kodlamasını (transfer-encoding) düzenle"
 
-#: send.c:1940
+#: send.c:1952
 msgid "Message contains text matching \"$attach_keyword\". Not sending."
 msgstr ""
 
-#: send.c:2001 smtp.c:191
+#: send.c:2013 smtp.c:191
 msgid "Sending message..."
 msgstr "İleti gönderiliyor..."
 
-#: send.c:2033
+#: send.c:2045
 #, fuzzy
 msgid "Save attachments in Fcc?"
 msgstr "eki metin olarak göster"
 
-#: send.c:2140
+#: send.c:2152
 msgid "Could not send the message."
 msgstr "İleti gönderilemedi."
 
-#: send.c:2146
+#: send.c:2158
 msgid "Sending in background."
 msgstr "Ardalanda gönderiliyor."
 
-#: send.c:2147
+#: send.c:2159
 msgid "Article posted."
 msgstr ""
 
-#: send.c:2148
+#: send.c:2160
 msgid "Mail sent."
 msgstr "Eposta gönderildi."
 
@@ -6370,11 +6382,11 @@ msgid ""
 "Copyright (C) 1996-2002 Brandon Long <blong@fiction.net>\n"
 "Copyright (C) 1997-2009 Thomas Roessler <roessler@does-not-exist.org>\n"
 "Copyright (C) 1998-2005 Werner Koch <wk@isil.d.shuttle.de>\n"
-"Copyright (C) 1999-2014 Brendan Cully <brendan@kublai.com>\n"
+"Copyright (C) 1999-2017 Brendan Cully <brendan@kublai.com>\n"
 "Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\n"
 "Copyright (C) 2000-2004 Edmund Grimley Evans <edmundo@rano.org>\n"
 "Copyright (C) 2006-2009 Rocco Rutte <pdmef@gmx.net>\n"
-"Copyright (C) 2014-2016 Kevin J. McCarthy <kevin@8t8.us>\n"
+"Copyright (C) 2014-2017 Kevin J. McCarthy <kevin@8t8.us>\n"
 "Copyright (C) 2015-2017 Richard Russon <rich@flatcap.org>\n"
 "\n"
 "Many others not mentioned here contributed code, fixes,\n"
