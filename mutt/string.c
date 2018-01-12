@@ -50,6 +50,7 @@
  * | mutt_str_strcmp()             | Compare two strings, safely
  * | mutt_str_strcoll()            | Collate two strings (compare using locale), safely
  * | mutt_str_strdup()             | Copy a string, safely
+ * | mutt_str_strndup()            | Copy part of a string, safely
  * | mutt_str_strfcpy()            | Copy a string into a buffer (guaranteeing NUL-termination)
  * | mutt_str_stristr()            | Find first occurrence of string (ignoring case)
  * | mutt_str_strlen()             | Calculate the length of a string, safely
@@ -253,14 +254,26 @@ int mutt_str_atoi(const char *str, int *dst)
  */
 char *mutt_str_strdup(const char *s)
 {
-  char *p = NULL;
-  size_t l;
-
   if (!s || !*s)
     return 0;
-  l = strlen(s) + 1;
-  p = mutt_mem_malloc(l);
-  memcpy(p, s, l);
+  return mutt_str_strndup(s, strlen(s));
+}
+
+/**
+ * mutt_str_strndup - Copy part of a string, safely
+ * @param s String to copy
+ * @param len Length of the part of the string to copy
+ * @retval ptr  Copy of the string
+ * @retval NULL if s was NULL
+ */
+char *mutt_str_strndup(const char *s, size_t len)
+{
+  char *p = NULL;
+
+  if (!s || !*s || len == 0)
+    return 0;
+  p = mutt_mem_malloc(len + 1);
+  memcpy(p, s, len + 1);
   return p;
 }
 
