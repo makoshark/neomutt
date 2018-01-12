@@ -648,103 +648,59 @@ void rfc2047_encode_addrlist(struct Address *addr, const char *tag)
   }
 }
 
-static int rfc2047_decode_word(char *d, const char *s, size_t len)
+static char *rfc2047_decode_word(const char *s, size_t len, 
+    enum ContentEncoding enc)
 {
-  const char *pp = NULL, *pp1 = NULL;
-  char *pd = NULL, *d0 = NULL;
-  const char *t = NULL, *t1 = NULL;
-  int enc = 0, count = 0;
-  char *charset = NULL;
-  int rc = -1;
+  struct Buffer buf = {0};
+  const char *it = s;
+  const char *end = s + len;
 
-  pd = d0 = mutt_mem_malloc(strlen(s) + 1);
-
-  for (pp = s; (pp1 = strchr(pp, '?')); pp = pp1 + 1)
+  if (enc == ENCQUOTEDPRINTABLE)
   {
-    count++;
-
-    /* hack for non-compliant MUAs that allow unquoted question marks in encoded-text */
-    if (count == 4)
+    for (; it < end; ++it)
     {
-      while (pp1 && *(pp1 + 1) != '=')
-        pp1 = strchr(pp1 + 1, '?');
-      if (!pp1)
-        goto error_out_0;
+      if (*it == '_')
+      {
+        mutt_buffer_addch(&buf, ' ');
+      }
+      else if (*it == '=' && (!(it[1] & ~127) && hexval(it[1]) != -1) &&
+               (!(it[2] & ~127) && hexval(it[2]) != -1))
+      {
+        mutt_buffer_addch(&buf, (hexval(it[1]) << 4) | hexval(it[2]));
+        it += 2;
+      }
+      else
+      {
+        mutt_buffer_addch(&buf, *it);
+      }
     }
+  }
+  else if (enc == ENCBASE64)
+  {
+    int c, b = 0, k = 0;
 
-    switch (count)
+    for (; it < end; ++it)
     {
-      case 2:
-        /* ignore language specification a la RFC2231 */
-        t = pp1;
-        t1 = memchr(pp, '*', t - pp);
-        if (t1)
-          t = t1;
-        charset = mutt_str_substr_dup(pp, t);
+      if (*it == '=')
         break;
-      case 3:
-        if (toupper((unsigned char) *pp) == 'Q')
-          enc = ENCQUOTEDPRINTABLE;
-        else if (toupper((unsigned char) *pp) == 'B')
-          enc = ENCBASE64;
-        else
-          goto error_out_0;
-        break;
-      case 4:
-        if (enc == ENCQUOTEDPRINTABLE)
-        {
-          for (; pp < pp1; pp++)
-          {
-            if (*pp == '_')
-              *pd++ = ' ';
-            else if (*pp == '=' && (!(pp[1] & ~127) && hexval(pp[1]) != -1) &&
-                     (!(pp[2] & ~127) && hexval(pp[2]) != -1))
-            {
-              *pd++ = (hexval(pp[1]) << 4) | hexval(pp[2]);
-              pp += 2;
-            }
-            else
-              *pd++ = *pp;
-          }
-          *pd = 0;
-        }
-        else if (enc == ENCBASE64)
-        {
-          int c, b = 0, k = 0;
-
-          for (; pp < pp1; pp++)
-          {
-            if (*pp == '=')
-              break;
-            if ((*pp & ~127) || (c = base64val(*pp)) == -1)
-              continue;
-            if (k + 6 >= 8)
-            {
-              k -= 2;
-              *pd++ = b | (c >> k);
-              b = c << (8 - k);
-            }
-            else
-            {
-              b |= c << (k + 2);
-              k += 6;
-            }
-          }
-          *pd = 0;
-        }
-        break;
+      if ((*it & ~127) || (c = base64val(*it)) == -1)
+        continue;
+      if (k + 6 >= 8)
+      {
+        k -= 2;
+        mutt_buffer_addch(&buf, b | (c >> k));
+        b = c << (8 - k);
+      }
+      else
+      {
+        b |= c << (k + 2);
+        k += 6;
+      }
     }
   }
 
-  if (charset)
-    mutt_cs_convert_string(&d0, charset, Charset, MUTT_ICONV_HOOK_FROM);
-  mutt_filter_unprintable(&d0);
-  mutt_str_strfcpy(d, d0, len);
-  rc = 0;
-error_out_0:
-  FREE(&charset);
-  FREE(&d0);
-  return rc;
+  mutt_buffer_addch(&buf, '\0');
+  return buf.data;
 }
 
 /**
@@ -755,31 +711,69 @@ error_out_0:
  * we don't require the encoded word to be separated by linear-white-space
  * (section 5(1)).
  */
-static const char *find_encoded_word(const char *s, const char **x)
+static char *find_encoded_word(char *s, enum ContentEncoding *enc,
+    char **charset, size_t *charsetlen, char **text, size_t *textlen)
 {
-  const char *p = NULL, *q = NULL;
+  regex_t re;
+  regmatch_t match[4];
+  size_t nmatch = 4;
 
-  q = s;
-  while ((p = strstr(q, "=?")))
+  if (regcomp(&re,
+        "=\\?"
+        "([^][()<>@,;:\"/\\?, =]+)"  /* charset */
+        "\\?"
+        "([qQbB])"                  /* encoding */
+        "\\?"
+        "([^?]*)"                   /* encoded text */
+        "\\?="
+        , REG_EXTENDED) != 0)
   {
-    for (q = p + 2; 0x20 < *q && *q < 0x7f && !strchr("()<>@,;:\"/[]?.=", *q); q++)
-      ;
-    if (q[0] != '?' || q[1] == '\0' || !strchr("BbQq", q[1]) || q[2] != '?')
-      continue;
-    /* non-strict check since many MUAs will not encode spaces and question marks */
-    for (q = q + 3; 0x20 <= *q && *q < 0x7f && (*q != '?' || q[1] != '='); q++)
-      ;
-    if (q[0] != '?' || q[1] != '=')
-    {
-      q--;
-      continue;
-    }
-
-    *x = q + 2;
-    return p;
+      return NULL;
   }
 
-  return 0;
+  int rc = regexec(&re, s, nmatch, match, 0);
+  regfree(&re);
+  if (rc != 0)
+  {
+    return NULL;
+  }
+
+  /* Charset */
+  *charset = s + match[1].rm_so;
+  *charsetlen = match[1].rm_eo - match[1].rm_so;
+
+  /* Encoding: either Q or B */
+  *enc = (s[match[2].rm_so] == 'Q' || s[match[2].rm_so] == 'q')
+    ? ENCQUOTEDPRINTABLE : ENCBASE64;
+
+  *text = s + match[3].rm_so;
+  *textlen = match[3].rm_eo - match[3].rm_so;
+  return s + match[0].rm_so;
+}
+
+/**
+ * finalize_chunk - Perform charset conversion and filtering
+ *
+ *
+ * @param[out] res       Buffer where the resulting string is appended
+ * @param[in] buf        Buffer with the input string
+ * @param[in] charset    Charset to use for the conversion
+ * @param[in] charsetlen Length of the charset parameter
+ *
+ * The buffer buf is reinitialized at the end of this function.
+ */
+static void finalize_chunk(struct Buffer *res, struct Buffer *buf,
+    char *charset, size_t charsetlen)
+{
+
+  char end = charset[charsetlen];
+  charset[charsetlen] = '\0';
+  mutt_cs_convert_string(&buf->data, charset, Charset, MUTT_ICONV_HOOK_FROM);
+  charset[charsetlen] = end;
+  mutt_filter_unprintable(&buf->data);
+  mutt_buffer_addstr(res, buf->data);
+  FREE(&buf->data);
+  mutt_buffer_init(buf);
 }
 
 /**
@@ -790,120 +784,90 @@ static const char *find_encoded_word(const char *s, const char **x)
  */
 void rfc2047_decode(char **pd)
 {
-  const char *p = NULL, *q = NULL;
-  size_t m, n;
-  bool found_encoded = false;
-  char *d0 = NULL, *d = NULL;
-  const char *s = *pd;
-  size_t dlen;
+  struct Buffer buf = {0};    /* Output buffer                          */
+  char *s = *pd;              /* Read pointer                           */
+  char *beg;                  /* Begin of encoded word                  */
+  enum ContentEncoding enc;   /* ENCBASE64 or ENCQUOTEDPRINTABLE        */
+  char *charset;              /* Which charset                          */
+  size_t charsetlen;          /* Lenght of the charset                  */
+  char *text;                 /* Encoded text                           */
+  size_t textlen;             /* Length of encoded text                 */
 
-  if (!s || !*s)
-    return;
-
-  dlen = 4 * strlen(s); /* should be enough */
-  d = d0 = mutt_mem_malloc(dlen + 1);
-
-  while (*s && dlen > 0)
+  /* Keep some state in case the next decoded word is using the same charset
+   * and it happens to be split in the middle of a multibyte character. See
+   * https://github.com/neomutt/neomutt/issues/1015
+   */
+  struct Buffer prev = {0};   /* Previously decoded word                */
+  char *prev_charset = NULL;  /* Previously used charset                */
+  size_t prev_charsetlen;     /* Length of the previously used charset  */
+  
+  while (*s)
   {
-    p = find_encoded_word(s, &q);
-    if (!p)
+    beg = find_encoded_word(s, &enc, &charset, &charsetlen, &text, &textlen);
+    if (beg != s)
     {
-      /* no encoded words */
-      if (IgnoreLinearWhiteSpace)
-      {
-        n = mutt_str_strlen(s);
-        if (found_encoded && (m = mutt_str_lws_len(s, n)) != 0)
-        {
-          if (m != n)
-          {
-            *d = ' ';
-            d++;
-            dlen--;
-          }
-          s += m;
-        }
-      }
-      if (AssumedCharset && *AssumedCharset)
-      {
-        char *t = NULL;
-        size_t tlen;
+      /* Some non-encoded text was found */
+      size_t holelen = beg ? beg - s : mutt_str_strlen(s);
 
-        n = mutt_str_strlen(s);
-        t = mutt_mem_malloc(n + 1);
-        mutt_str_strfcpy(t, s, n + 1);
-        convert_nonmime_string(&t);
-        tlen = mutt_str_strlen(t);
-        strncpy(d, t, tlen);
-        d += tlen;
-        FREE(&t);
-        break;
-      }
-      strncpy(d, s, dlen);
-      d += dlen;
-      break;
-    }
-
-    if (p != s)
-    {
-      n = (size_t)(p - s);
-      /* ignore spaces between encoded word
-       * and linear-white-space between encoded word and *text */
-      if (IgnoreLinearWhiteSpace)
+      /* Ignore whitespace */
+      size_t lwslen = mutt_str_lws_len(s, holelen);
+      if (beg && lwslen == beg - s)
       {
-        if (found_encoded && (m = mutt_str_lws_len(s, n)) != 0)
+        s += lwslen;
+      }
+      else
+      {
+        /* If we have some previously decoded text, add it now */
+        if (prev.data)
         {
-          if (m != n)
-          {
-            *d = ' ';
-            d++;
-            dlen--;
-          }
-          n -= m;
-          s += m;
+          finalize_chunk(&buf, &prev, prev_charset, prev_charsetlen);
         }
 
-        m = n - mutt_str_lws_rlen(s, n);
-        if (m != 0)
+        /* Add non-encoded part */
         {
-          if (m > dlen)
-            m = dlen;
-          memcpy(d, s, m);
-          d += m;
-          dlen -= m;
-          if (m != n)
+          if (AssumedCharset && *AssumedCharset)
           {
-            *d = ' ';
-            d++;
-            dlen--;
+            char *conv = mutt_str_strndup(s, holelen);
+            convert_nonmime_string(&conv);
+            mutt_buffer_addstr(&buf, conv);
+            FREE(&conv);
+          }
+          else
+          {
+            mutt_buffer_add(&buf, s, holelen);
           }
         }
-      }
-      else if (!found_encoded || strspn(s, " \t\r\n") != n)
-      {
-        if (n > dlen)
-          n = dlen;
-        memcpy(d, s, n);
-        d += n;
-        dlen -= n;
+        s += holelen;
       }
     }
-
-    if (rfc2047_decode_word(d, p, dlen) == -1)
+    if (beg)
     {
-      /* could not decode word, fall back to displaying the raw string */
-      mutt_str_strfcpy(d, p, dlen);
+      /* Some encoded text was found */
+      char *decoded = rfc2047_decode_word(text, textlen, enc);
+      if (prev.data && (prev_charsetlen != charsetlen ||
+          strncmp(prev_charset, charset, charsetlen) != 0))
+      {
+          /* Different charset, convert the previous chunk and add it to the
+           * final result */
+          finalize_chunk(&buf, &prev, prev_charset, prev_charsetlen);
+      }
+
+      mutt_buffer_addstr(&prev, decoded);
+      prev_charset = charset;
+      prev_charsetlen = charsetlen;
+      s = text + textlen + 2; /* Skip final ?= */
     }
-    found_encoded = true;
-    s = q;
-    n = mutt_str_strlen(d);
-    dlen -= n;
-    d += n;
   }
-  *d = 0;
 
-  FREE(pd);
-  *pd = d0;
-  mutt_str_adjust(pd);
+  /* Save the last chunk */
+  if (prev.data)
+  {
+    finalize_chunk(&buf, &prev, prev_charset, prev_charsetlen);
+  }
+
+  mutt_buffer_addch(&buf, '\0');
+  *pd = buf.data;
+  return;
 }
 
 void rfc2047_decode_addrlist(struct Address *a)
