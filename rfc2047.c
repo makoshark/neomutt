@@ -809,36 +809,34 @@ void rfc2047_decode(char **pd)
       /* Some non-encoded text was found */
       size_t holelen = beg ? beg - s : mutt_str_strlen(s);
 
-      /* Ignore whitespace */
-      size_t lwslen = mutt_str_lws_len(s, holelen);
-      if (beg && lwslen == beg - s)
+      /* Ignore whitespace between encoded words */
+      if (beg && mutt_str_lws_len(s, holelen) == holelen)
       {
-        s += lwslen;
+        s = beg;
+        continue;
       }
-      else
-      {
-        /* If we have some previously decoded text, add it now */
-        if (prev.data)
-        {
-          finalize_chunk(&buf, &prev, prev_charset, prev_charsetlen);
-        }
 
-        /* Add non-encoded part */
-        {
-          if (AssumedCharset && *AssumedCharset)
-          {
-            char *conv = mutt_str_strndup(s, holelen);
-            convert_nonmime_string(&conv);
-            mutt_buffer_addstr(&buf, conv);
-            FREE(&conv);
-          }
-          else
-          {
-            mutt_buffer_add(&buf, s, holelen);
-          }
-        }
-        s += holelen;
+      /* If we have some previously decoded text, add it now */
+      if (prev.data)
+      {
+        finalize_chunk(&buf, &prev, prev_charset, prev_charsetlen);
       }
+
+      /* Add non-encoded part */
+      {
+        if (AssumedCharset && *AssumedCharset)
+        {
+          char *conv = mutt_str_strndup(s, holelen);
+          convert_nonmime_string(&conv);
+          mutt_buffer_addstr(&buf, conv);
+          FREE(&conv);
+        }
+        else
+        {
+          mutt_buffer_add(&buf, s, holelen);
+        }
+      }
+      s += holelen;
     }
     if (beg)
     {
